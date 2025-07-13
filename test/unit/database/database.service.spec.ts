@@ -1,11 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { DatabaseService } from '../../../src/database/database.service'
+import * as prismaLib from '../../../src/lib/prisma'
 
 describe('DatabaseService', () => {
   let service: DatabaseService
+  let mockPrismaClient: {
+    $connect: jest.Mock<Promise<void>, []>
+    $disconnect: jest.Mock<Promise<void>, []>
+    tCity: Record<string, unknown>
+    tEvent: Record<string, unknown>
+  }
 
   beforeEach(async () => {
+    // Create minimal mock matching only what DatabaseService uses
+    mockPrismaClient = {
+      $connect: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
+      $disconnect: jest.fn<Promise<void>, []>().mockResolvedValue(undefined),
+      tCity: {},
+      tEvent: {},
+    }
+
+    // Mock the singleton function to return our minimal mock
+    jest
+      .spyOn(prismaLib, 'getPrismaClient')
+      .mockReturnValue(mockPrismaClient as never)
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [DatabaseService],
     }).compile()
@@ -21,33 +41,30 @@ describe('DatabaseService', () => {
     expect(service).toBeDefined()
   })
 
-  it('should have PrismaClient methods and OnModuleInit interface', () => {
-    expect(typeof service.$connect).toBe('function')
-    expect(typeof service.$disconnect).toBe('function')
+  it('should have delegation methods and OnModuleInit interface', () => {
+    expect(typeof service.tCity).toBe('object')
+    expect(typeof service.tEvent).toBe('object')
     expect(typeof service.onModuleInit).toBe('function')
+    expect(typeof service.onModuleDestroy).toBe('function')
     expect(service.constructor.name).toBe('DatabaseService')
   })
 
   describe('onModuleInit', () => {
     it('should call $connect when module initializes', async () => {
-      const connectSpy = jest.spyOn(service, '$connect').mockResolvedValue()
-
       await service.onModuleInit()
 
-      expect(connectSpy).toHaveBeenCalledTimes(1)
-      expect(connectSpy).toHaveBeenCalledWith()
+      expect(mockPrismaClient.$connect).toHaveBeenCalledTimes(1)
+      expect(mockPrismaClient.$connect).toHaveBeenCalledWith()
     })
 
     it('should handle $connect errors properly', async () => {
       const connectionError = new Error('Database connection failed')
-      const connectSpy = jest
-        .spyOn(service, '$connect')
-        .mockRejectedValue(connectionError)
+      mockPrismaClient.$connect.mockRejectedValue(connectionError)
 
       await expect(service.onModuleInit()).rejects.toThrow(
         'Database connection failed',
       )
-      expect(connectSpy).toHaveBeenCalledTimes(1)
+      expect(mockPrismaClient.$connect).toHaveBeenCalledTimes(1)
     })
   })
 })
