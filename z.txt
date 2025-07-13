@@ -125,3 +125,29 @@ feat: implement cities module with database integration and resolve lint
     - Remove unnecessary async/await and console statements in test setup
   - Update code style to use semicolon-free imports and consistent formatting
   - Maintain 100% TypeScript compilation and lint compliance
+
+
+
+
+  refactor: implement singleton pattern for Prisma client with centralized
+  imports
+
+  - Create centralized Prisma module (src/lib/prisma.ts) with singleton
+  pattern
+  - Implement getPrismaClient() function to ensure single database
+  connection
+  - Add graceful shutdown with disconnectPrisma() for proper cleanup
+  - Refactor DatabaseService to use delegation pattern instead of
+  inheritance
+  - Update all-exceptions.filter.ts to use centralized Prisma error type
+  imports
+  - Fix TypeScript errors by importing Prisma error classes from
+  runtime/library
+  - Update cities.service.ts to use centralized TCity type import
+  - Establish single source of truth for all Prisma-related imports
+  - Add proper connection lifecycle management (connect/disconnect)
+  - Configure development logging for database queries and errors
+
+  This refactoring eliminates import inconsistencies, resolves TypeScript
+  compilation issues, and follows proper architectural patterns for database
+  connection management.
