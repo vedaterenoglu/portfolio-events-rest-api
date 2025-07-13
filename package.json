@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/vedaterenoglu/portfolio-events-api.git"
+    "url": "https://github.com/vedaterenoglu/portfolio-events-rest-api.git"
   },
   "keywords": [
     "Node.js",
@@ -23,7 +23,7 @@
     "linkedin": "https://www.linkedin.com/in/vedaterenoglu/"
   },
   "license": "Recruiter-Evaluation License",
-  "homepage": "https://portfolio-events-api.demo.vedaterenoglu.com",
+  "homepage": "https://portfolio-events-rest-api.demo.vedaterenoglu.com",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
