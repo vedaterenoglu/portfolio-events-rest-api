@@ -13,17 +13,32 @@ import type { TCity, TEvent, Prisma } from '../generated/client'
 let prismaInstance: PrismaClient
 
 /**
+ * Get logging configuration based on environment
+ * Single Responsibility: Environment-based logging configuration
+ */
+export const getLoggingConfig = (): ('query' | 'error' | 'warn')[] => {
+  return process.env.NODE_ENV === 'development'
+    ? ['query', 'error', 'warn']
+    : ['error']
+}
+
+/**
+ * Create new PrismaClient instance with logging configuration
+ * Single Responsibility: PrismaClient instantiation
+ */
+export const createPrismaClient = (): PrismaClient => {
+  return new PrismaClient({
+    log: getLoggingConfig(),
+  })
+}
+
+/**
  * Get singleton instance of PrismaClient
  * Ensures only one database connection is created
  */
 export const getPrismaClient = (): PrismaClient => {
   if (!prismaInstance) {
-    prismaInstance = new PrismaClient({
-      log:
-        process.env.NODE_ENV === 'development'
-          ? ['query', 'error', 'warn']
-          : ['error'],
-    })
+    prismaInstance = createPrismaClient()
   }
   return prismaInstance
 }

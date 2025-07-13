@@ -30,5 +30,8 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitOverride": true
-  }
+  },
+  "exclude": [
+    "src/generated/zod/**/*"
+  ]
 }
