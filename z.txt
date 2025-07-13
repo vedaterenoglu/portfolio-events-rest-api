@@ -193,3 +193,26 @@ feat: implement cities module with database integration and resolve lint
   - Achieve 100% test coverage for src/schemas/index.ts (statements, branches, functions, lines)
   - Configure TypeScript to exclude generated Zod files from compilation checks
   - Establish foundation for Prisma-to-Zod validation migration
+
+  test: achieve 80% branch coverage for AllExceptionsFilter with comprehensive test suite
+
+  - Add 14 comprehensive unit tests for AllExceptionsFilter covering all error handling paths
+  - Test ZodError handling with structured validation details
+  - Test HttpException handling with proper status and response mapping
+  - Test PrismaClientKnownRequestError with error code mapping (P2002)
+  - Test generic error handling with message cleaning functionality
+  - Test all private error handler methods via type assertions:
+    * handlePrismaValidationError
+    * handlePrismaUnknownRequestError
+    * handlePrismaRustPanicError
+    * handlePrismaInitializationError
+  - Test error mapping functions with unknown codes for fallback branches
+  - Test ternary operator branches with non-Error exceptions
+  - Test edge cases: exceptions without constructor names, long messages (>100 chars)
+  - Test PrismaClientKnownRequestError without code property to trigger OR operator fallbacks
+
+  Coverage achieved:
+  - Statements: 94.2% (target: 80%+) ✅
+  - Branches: 80% (target: 80%+) ✅
+  - Functions: 100% (target: 80%+) ✅
+  - Lines: 93.93% (target: 80%+) ✅

@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common'
 
 import { DatabaseService } from '../database/database.service'
-
-import type { TCity } from '../lib/prisma'
+import { City } from '../schemas/city.schema'
 
 interface CitiesResponse {
   count: number
-  cities: TCity[]
+  cities: City[]
 }
 
 @Injectable()

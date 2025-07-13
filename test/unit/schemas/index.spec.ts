@@ -1,5 +1,5 @@
-import { 
-  TCitySchema, 
+import {
+  TCitySchema,
   TEventSchema,
   TCityScalarFieldEnumSchema,
   TEventScalarFieldEnumSchema,
@@ -21,7 +21,7 @@ describe('Schemas Index', () => {
     expect(TEventScalarFieldEnumSchema).toBeDefined()
     expect(typeof TCityScalarFieldEnumSchema.parse).toBe('function')
     expect(typeof TEventScalarFieldEnumSchema.parse).toBe('function')
-    
+
     // Test valid enum values
     expect(() => TCityScalarFieldEnumSchema.parse('citySlug')).not.toThrow()
     expect(() => TEventScalarFieldEnumSchema.parse('id')).not.toThrow()
@@ -34,10 +34,12 @@ describe('Schemas Index', () => {
     expect(typeof SortOrderSchema.parse).toBe('function')
     expect(typeof QueryModeSchema.parse).toBe('function')
     expect(typeof TransactionIsolationLevelSchema.parse).toBe('function')
-    
+
     // Test valid enum values
     expect(() => SortOrderSchema.parse('asc')).not.toThrow()
     expect(() => QueryModeSchema.parse('default')).not.toThrow()
-    expect(() => TransactionIsolationLevelSchema.parse('ReadCommitted')).not.toThrow()
+    expect(() =>
+      TransactionIsolationLevelSchema.parse('ReadCommitted'),
+    ).not.toThrow()
   })
 })

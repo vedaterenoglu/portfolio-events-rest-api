@@ -1,9 +1,8 @@
-import { CitySchema } from '../../../src/schemas/city.schema'
+import { CitySchema, CreateCitySchema } from '../../../src/schemas/city.schema'
 
 describe('CitySchema', () => {
   it('should validate a valid city object', () => {
     const validCity = {
-      id: 'clmn1abc23456789def01234',
       citySlug: 'test-city',
       city: 'Test City',
       url: 'https://example.com/test-city.jpg',
@@ -17,6 +16,22 @@ describe('CitySchema', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data).toEqual(validCity)
+    }
+  })
+
+  it('should validate CreateCitySchema without timestamp fields', () => {
+    const createCityData = {
+      citySlug: 'new-city',
+      city: 'New City',
+      url: 'https://example.com/new-city.jpg',
+      alt: 'New city image',
+    }
+
+    const result = CreateCitySchema.safeParse(createCityData)
+
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toEqual(createCityData)
     }
   })
 })

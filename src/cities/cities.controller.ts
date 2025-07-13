@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common'
 
-import { TCity } from '../generated/client'
+import { City } from '../schemas/city.schema'
 
 import { CitiesService } from './cities.service'
 
 interface CitiesResponse {
   count: number
-  cities: TCity[]
+  cities: City[]
 }
 
 @Controller('api/cities')

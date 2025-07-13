@@ -1,6 +1,13 @@
-import { Catch, ArgumentsHost, HttpStatus, HttpException } from '@nestjs/common'
+import {
+  Catch,
+  ArgumentsHost,
+  HttpStatus,
+  HttpException,
+  Logger,
+} from '@nestjs/common'
 import { BaseExceptionFilter } from '@nestjs/core'
 import { Request, Response } from 'express'
+import { ZodError } from 'zod'
 
 import {
   PrismaClientValidationError,
@@ -8,14 +15,13 @@ import {
   PrismaClientRustPanicError,
   PrismaClientInitializationError,
 } from './lib/prisma'
-import { LoggerService } from './services/logger/logger.service'
 
 interface ErrorResponse {
   statusCode: number
   timestamp: string
   path: string
   response: string | object
-  error?: string
+  error?: string | object
 }
 
 interface PrismaKnownRequestError {
@@ -26,7 +32,7 @@ interface PrismaKnownRequestError {
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
-  private readonly logger = new LoggerService(AllExceptionsFilter.name)
+  private readonly logger = new Logger(AllExceptionsFilter.name)
 
   override catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp()
@@ -46,22 +52,20 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       exception instanceof Error
         ? exception.message.substring(0, 100)
         : 'Unknown'
-    this.logger.log(
-      `Exception caught: ${exceptionName} - ${exceptionMessage}`,
-      AllExceptionsFilter.name,
-    )
+    this.logger.log(`Exception caught: ${exceptionName} - ${exceptionMessage}`)
 
     // Additional debug for Prisma errors
     if (exception?.constructor?.name === 'PrismaClientKnownRequestError') {
       const prismaError = exception as PrismaKnownRequestError
       this.logger.log(
         `Prisma error detected with code: ${prismaError.code || 'unknown'}`,
-        AllExceptionsFilter.name,
       )
     }
 
     if (exception instanceof HttpException) {
       this.handleHttpException(exception, errorResponse)
+    } else if (exception instanceof ZodError) {
+      this.handleZodError(exception, errorResponse)
     } else if (
       exception?.constructor?.name === 'PrismaClientKnownRequestError'
     ) {
@@ -84,7 +88,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     response.status(errorResponse.statusCode).json(errorResponse)
     this.logger.error(
       `${errorResponse.statusCode} ${typeof errorResponse.response === 'object' ? JSON.stringify(errorResponse.response) : errorResponse.response}`,
-      AllExceptionsFilter.name,
     )
 
     super.catch(exception, host)
@@ -98,12 +101,32 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     errorResponse.response = exception.getResponse()
   }
 
+  private handleZodError(
+    exception: ZodError,
+    errorResponse: ErrorResponse,
+  ): void {
+    errorResponse.statusCode = HttpStatus.BAD_REQUEST
+    errorResponse.response = 'Validation failed'
+
+    // Extract specific validation errors from Zod
+    const validationErrors = exception.issues.map(issue => ({
+      field: issue.path.join('.'),
+      message: issue.message,
+      code: issue.code,
+    }))
+
+    errorResponse.error = {
+      message: 'Input validation failed',
+      details: validationErrors,
+    }
+  }
+
   private handlePrismaKnownRequestError(
     exception: PrismaKnownRequestError,
     errorResponse: ErrorResponse,
   ): void {
     const code: string = exception.code || 'UNKNOWN'
-    this.logger.log(`Prisma error code: ${code}`, AllExceptionsFilter.name)
+    this.logger.log(`Prisma error code: ${code}`)
     errorResponse.statusCode = this.mapPrismaErrorCodeToHttpStatus(code)
     errorResponse.response = this.mapPrismaErrorCodeToMessage(code)
     errorResponse.error = code
@@ -115,7 +138,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   ): void {
     errorResponse.statusCode = HttpStatus.BAD_REQUEST
     errorResponse.response = 'Invalid data provided'
-    errorResponse.error = this.cleanErrorMessage(exception.message)
+    errorResponse.error = this.cleanErrorMessage(
+      exception instanceof Error ? exception.message : 'Validation error',
+    )
   }
 
   private handlePrismaUnknownRequestError(
@@ -124,7 +149,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   ): void {
     errorResponse.statusCode = HttpStatus.BAD_REQUEST
     errorResponse.response = 'Database request failed'
-    errorResponse.error = exception.message
+    errorResponse.error =
+      exception instanceof Error ? exception.message : 'Unknown request error'
   }
 
   private handlePrismaRustPanicError(
@@ -133,7 +159,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   ): void {
     errorResponse.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
     errorResponse.response = 'Database engine error'
-    errorResponse.error = exception.message
+    errorResponse.error =
+      exception instanceof Error ? exception.message : 'Database engine error'
   }
 
   private handlePrismaInitializationError(
@@ -142,7 +169,10 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   ): void {
     errorResponse.statusCode = HttpStatus.SERVICE_UNAVAILABLE
     errorResponse.response = 'Database connection failed'
-    errorResponse.error = exception.message
+    errorResponse.error =
+      exception instanceof Error
+        ? exception.message
+        : 'Database connection failed'
   }
 
   private handleGenericError(
