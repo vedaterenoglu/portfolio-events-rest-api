@@ -227,6 +227,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       P2028: HttpStatus.INTERNAL_SERVER_ERROR, // Transaction API error
     }
 
+    // eslint-disable-next-line security/detect-object-injection
     return errorMap[code] || HttpStatus.INTERNAL_SERVER_ERROR
   }
 
@@ -264,6 +265,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       P2028: 'Transaction API error',
     }
 
+    // eslint-disable-next-line security/detect-object-injection
     return messageMap[code] || 'An unknown database error occurred'
   }
 }

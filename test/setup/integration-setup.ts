@@ -8,12 +8,12 @@ beforeEach(() => {
   jest.restoreAllMocks()
 })
 
-beforeAll(() => {
+beforeAll(async () => {
   // Setup for integration tests
   // Integration test suite initialization
 })
 
-afterAll(() => {
+afterAll(async () => {
   // Cleanup after all integration tests
   // Integration test suite cleanup completed
 })
@@ -21,6 +21,7 @@ afterAll(() => {
 // Mock process.env for tests
 process.env.NODE_ENV = 'test'
 process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
+process.env.PORT = '3001'
 
 // Global test timeout for integration tests
 jest.setTimeout(30000)
