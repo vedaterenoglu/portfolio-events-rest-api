@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TCity {
+  citySlug  String   @id
+  city      String   @unique
+  url       String
+  alt       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // One-to-many relationship with TEvent
+  events    TEvent[]
+}
+
+model TEvent {
+  id            Int      @id
+  name          String
+  slug          String   @unique
+  city          String
+  citySlug      String
+  location      String
+  date          DateTime
+  organizerName String
+  imageUrl      String
+  alt           String
+  description   String
+  price         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // One-to-many relationship with TCity
+  cityData      TCity    @relation(fields: [citySlug], references: [citySlug])
+}

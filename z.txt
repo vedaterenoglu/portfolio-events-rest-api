@@ -1,0 +1,108 @@
+City Routes (/src/routes/cityRoutes.ts):
+
+  1. GET /cities - Public route (with rate limiting)
+  2. POST /admin/cities - Admin route (with auth + admin middleware)
+  3. PUT /admin/cities/:id - Admin route (with auth + admin middleware)
+
+  Event Routes (/src/routes/eventRoutes.ts):
+
+  1. GET /events - Public route
+  2. GET /events/:slug - Public route (with rate limiting)
+  3. POST /admin/events - Admin route (with auth + admin middleware)
+  4. PUT /admin/events/:id - Admin route (with auth + admin middleware)
+  5. DELETE /admin/events/:id - Admin route (with auth + admin middleware)
+
+
+UNIT TESTS
+Let me explain how to work together:
+Think systematically—coding is not trial-and-error problem solving. Programming is engineering, and it follows deterministic principles. Given identical inputs and environment states, the same code produces consistent outputs. Avoid ad-hoc development. Don't implement without predicting outcomes. At each development phase, address these questions: What (requirements/specification), Why (business logic/purpose), Expectations(What we expect as result), Risks (failure modes/side effects). Ensure rollback mechanisms are in place—maintain version control, database backups, and deployment snapshots so any change can be reverted without data loss. After execution, immediately validate results against expected behaviour and be prepared to rollback if outcomes don't match expectations.
+
+For each iteration, before the execution for the next iteration provide: rationale (why this action is necessary), specification (what operation will be performed), expected output (predicted results), risk assessment (potential failure scenarios), rollback plan (recovery procedure to restore previous state), and post-execution validation (test results confirming whether the actual outcome matches the expected behaviour).
+
+We will create one or more test suit in one or more file for this file. We will do it in iterations. In each iteration you will add or edit only one test nothing else. Then run the test with coverage for only this suit and give the results. Do it after each addition or edition.
+Give results formatted as:Test Suites: 36 passed, 36 total
+Tests:       802 passed, 802 total
+Snapshots:   0 total
+Time:        5.203 s
+Ran all test suites.
+
+INTEGRATION TESTS
+
+Integration Test Engineering Principles
+
+  Core Philosophy:
+
+  Integration testing follows the same deterministic engineering principles but tests component interactions
+  rather than isolated units. We test how the entire request-response cycle works together: HTTP → Middleware
+   → Controllers → Services → Database → Response.
+
+  Integration Test Systematic Approach:
+
+  Per Iteration Framework:
+  1. Rationale: Why this integration test is necessary for system validation
+  2. Specification: What end-to-end scenario will be tested (HTTP request → response)
+  3. Expected Output: Predicted HTTP status, response body, database state changes
+  4. Risk Assessment: Potential failure modes (server errors, database issues, middleware failures)
+  5. Rollback Plan: How to restore clean test state (database cleanup, server reset)
+  6. Post-execution Validation: Verify HTTP response, database state, side effects
+
+  Integration Test Iteration Rules:
+
+  - ✅ One iteration = One integration test scenario
+  - ✅ Test real HTTP requests using supertest
+  - ✅ Include full middleware chain (auth, validation, rate limiting)
+  - ✅ Test database interactions with real or test database
+  - ✅ Verify end-to-end behaviour (request → database → response)
+  - ✅ Clean state between tests (database reset, server restart)
+
+  I have updated the prisma.schema and .env file. We are going to refactor the project. In another project I used this schema and generated the prima client and seeded the database. Database is ready now it doesn’t need to push the schema we need to create prisma client for this project and test the connection no push no migrate to the database. 
+
+Give the information before the next iteration.
+
+Continue with the next iteration.
+
+NEXT ITERATION REMINDER
+You are a test development specialist. Follow these strict requirements:
+Core Rules
+1. MANDATORY: AT THE BEGINNING OF THE EACH ITERATION GIVE INFO AS EXPLAINED IN CLAUDE.md FILE.
+2. NEVER use any type - Always use proper TypeScript types
+3. AT EACH ITERATION ADD OR EDIT ONLY ONE TEST NOT MORE.
+4. MANDATORY: 100% coverage for ALL THREE metrics
+    * Statements coverage: 100% (REQUIRED)
+    * Branch coverage: 100% (REQUIRED)
+    * Functions coverage: 100% (REQUIRED)
+    * ABSOLUTE MINIMUM if 100% impossible: 80% for each metric
+5. Always report coverage results after running tests
+6. Complete current file fully before asking about next file
+7. Check errors AFTER code changes: TypeScript → Lint → Run tests
+8. Apply these rules at every step of test creation
+Workflow
+
+Write test → Fix TS errors → Fix lint → Run test → Report coverage → Repeat until 100%
+Success Criteria
+* ✅ Zero TypeScript/lint errors
+* ✅ 100% coverage for ALL THREE metrics (statements, branches, functions) OR minimum 80% each if impossible
+* ✅ All tests passing
+* ✅ Complete file before proceeding
+Continue with next iteration following these guidelines.
+
+---------------------------------------------------------------
+feat: setup comprehensive test environment with Prisma client generation
+
+  - Generate Prisma client with custom output to src/generated/client
+  - Verify database connection (49 cities, 119 events) without schema changes
+  - Create Jest configurations for unit, integration, and e2e tests
+  - Establish test directory structure mirroring src/ organization
+  - Add comprehensive test scripts to package.json with coverage options
+  - Configure test setup files with proper TypeScript and mock utilities
+  - Implement 80% coverage thresholds and atomic testing framework
+  - Add Prisma and NestJS mock utilities for isolated testing
+
+  This commit message captures:
+  - feat: New feature implementation (test infrastructure)
+  - Prisma client generation: Core database client setup
+  - Test environment: Complete testing framework
+  - Directory structure: Following CLAUDE.md requirements
+  - Coverage thresholds: 80% minimum as specified
+  - Mock utilities: For isolated unit testing
+  - Database verification: Confirmed existing data without changes

@@ -1,9 +1,33 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "displayName": "E2E Tests",
+  "testMatch": ["<rootDir>/test/e2e/**/*.e2e.spec.ts"],
+  "preset": "ts-jest",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "rootDir": "../",
+  "moduleFileExtensions": ["js", "json", "ts"],
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "collectCoverageFrom": [
+    "src/**/*.(t|j)s",
+    "!src/**/*.spec.ts",
+    "!src/**/*.integration.spec.ts",
+    "!src/**/*.e2e.spec.ts",
+    "!src/main.ts",
+    "!src/generated/**/*",
+    "!src/**/*.interface.ts",
+    "!src/**/*.dto.ts"
+  ],
+  "coverageDirectory": "<rootDir>/coverage/e2e",
+  "coverageReporters": ["text", "lcov", "html"],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/test/setup/e2e-setup.ts"],
+  "testTimeout": 60000,
+  "maxWorkers": 1,
+  "clearMocks": true,
+  "resetMocks": true,
+  "restoreMocks": true
 }
