@@ -1,11 +1,12 @@
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '../../src/generated/client';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-export type MockPrismaClient = DeepMockProxy<PrismaClient>;
+import { PrismaClient } from '../../src/generated/client'
+
+export type MockPrismaClient = DeepMockProxy<PrismaClient>
 
 export const createMockPrismaClient = (): MockPrismaClient => {
-  return mockDeep<PrismaClient>();
-};
+  return mockDeep<PrismaClient>()
+}
 
 // Default mock data
 export const mockCityData = {
@@ -15,8 +16,8 @@ export const mockCityData = {
   alt: 'Test City Image',
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
-  events: []
-};
+  events: [],
+}
 
 export const mockEventData = {
   id: 1,
@@ -33,5 +34,5 @@ export const mockEventData = {
   price: 100,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
-  cityData: mockCityData
-};
+  cityData: mockCityData,
+}

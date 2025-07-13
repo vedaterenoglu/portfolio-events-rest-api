@@ -1,26 +1,26 @@
-import 'reflect-metadata';
+import 'reflect-metadata'
 
 // Global test setup for e2e tests
 beforeEach(() => {
   // Clear all mocks before each test
-  jest.clearAllMocks();
-  jest.resetAllMocks();
-  jest.restoreAllMocks();
-});
+  jest.clearAllMocks()
+  jest.resetAllMocks()
+  jest.restoreAllMocks()
+})
 
-beforeAll(async () => {
+beforeAll(() => {
   // Setup for e2e tests
-  console.log('Starting e2e test suite...');
-});
+  // E2E test suite initialization
+})
 
-afterAll(async () => {
+afterAll(() => {
   // Cleanup after all e2e tests
-  console.log('E2E test suite completed.');
-});
+  // E2E test suite cleanup completed
+})
 
 // Mock process.env for tests
-process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
+process.env.NODE_ENV = 'test'
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
 
 // Global test timeout for e2e tests
-jest.setTimeout(60000);
+jest.setTimeout(60000)

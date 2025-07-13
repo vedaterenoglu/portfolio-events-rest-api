@@ -7,24 +7,32 @@ export const createMockRequest = () => ({
   user: undefined,
   ip: '127.0.0.1',
   url: '/',
-  method: 'GET'
-});
+  method: 'GET',
+})
 
-export const createMockResponse = () => {
-  const res: any = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  res.send = jest.fn().mockReturnValue(res);
-  res.end = jest.fn().mockReturnValue(res);
-  res.setHeader = jest.fn().mockReturnValue(res);
-  return res;
-};
+interface MockResponse {
+  status: jest.Mock
+  json: jest.Mock
+  send: jest.Mock
+  end: jest.Mock
+  setHeader: jest.Mock
+}
+
+export const createMockResponse = (): MockResponse => {
+  const res = {} as MockResponse
+  res.status = jest.fn().mockReturnValue(res)
+  res.json = jest.fn().mockReturnValue(res)
+  res.send = jest.fn().mockReturnValue(res)
+  res.end = jest.fn().mockReturnValue(res)
+  res.setHeader = jest.fn().mockReturnValue(res)
+  return res
+}
 
 export const createMockExecutionContext = (request = createMockRequest()) => ({
   switchToHttp: jest.fn().mockReturnValue({
     getRequest: jest.fn().mockReturnValue(request),
-    getResponse: jest.fn().mockReturnValue(createMockResponse())
+    getResponse: jest.fn().mockReturnValue(createMockResponse()),
   }),
   getHandler: jest.fn(),
-  getClass: jest.fn()
-});
+  getClass: jest.fn(),
+})
