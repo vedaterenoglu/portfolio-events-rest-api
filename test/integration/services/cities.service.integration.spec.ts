@@ -13,6 +13,8 @@ describe('CitiesService Integration', () => {
       tCity: {
         findMany: jest.fn(),
         count: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
       },
     }
 
@@ -59,6 +61,66 @@ describe('CitiesService Integration', () => {
       expect(result).toEqual({ count: mockCities.length, cities: mockCities })
       expect(findManySpy).toHaveBeenCalledWith({
         orderBy: { city: 'asc' },
+      })
+    })
+  })
+
+  describe('createCity', () => {
+    it('should create and return a new city', async () => {
+      const createCityData = {
+        citySlug: 'ankara',
+        city: 'Ankara',
+        url: 'ankara.jpg',
+        alt: 'Ankara image',
+      }
+
+      const mockCreatedCity = {
+        id: '2',
+        ...createCityData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const createSpy = jest
+        .spyOn(databaseService.tCity, 'create')
+        .mockResolvedValue(mockCreatedCity)
+
+      const result = await service.createCity(createCityData)
+
+      expect(result).toEqual(mockCreatedCity)
+      expect(createSpy).toHaveBeenCalledWith({
+        data: createCityData,
+      })
+    })
+  })
+
+  describe('updateCity', () => {
+    it('should update and return the updated city', async () => {
+      const citySlug = 'istanbul'
+      const updateCityData = {
+        city: 'Istanbul Updated',
+        url: 'istanbul-updated.jpg',
+        alt: 'Updated Istanbul image',
+      }
+
+      const mockUpdatedCity = {
+        id: '1',
+        citySlug,
+        ...updateCityData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const updateSpy = jest
+        .spyOn(databaseService.tCity, 'update')
+        .mockResolvedValue(mockUpdatedCity)
+
+      const result = await service.updateCity(citySlug, updateCityData)
+
+      expect(result).toEqual(mockUpdatedCity)
+      expect(updateSpy).toHaveBeenCalledWith({
+        where: { citySlug },
+        data: updateCityData,
       })
     })
   })
