@@ -61,19 +61,6 @@ describe('AdminRoleGuard Integration', () => {
       )
     })
 
-    it('should return true for test user in development mode', async () => {
-      const originalNodeEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
-
-      const context = createMockExecutionContext({ sub: 'test-user-id' })
-
-      const result = await guard.canActivate(context)
-
-      expect(result).toBe(true)
-
-      process.env.NODE_ENV = originalNodeEnv
-    })
-
     it('should return true for admin user with admin role', async () => {
       const mockUser = {
         publicMetadata: {

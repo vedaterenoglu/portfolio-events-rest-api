@@ -32,11 +32,6 @@ export class AdminRoleGuard implements CanActivate {
       throw new ForbiddenException('User not authenticated')
     }
 
-    // TEST MODE: Allow test user in development
-    if (process.env.NODE_ENV === 'development' && userId === 'test-user-id') {
-      return true
-    }
-
     try {
       const user = (await clerkClient.users.getUser(userId)) as ClerkUser
       const isAdmin = user.publicMetadata.role === 'admin'

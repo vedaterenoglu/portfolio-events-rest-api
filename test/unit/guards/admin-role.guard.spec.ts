@@ -55,22 +55,6 @@ describe('AdminRoleGuard', () => {
       )
     })
 
-    it('should allow test user in development mode', async () => {
-      const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
-
-      mockRequest.user = {
-        sub: 'test-user-id',
-        email: 'test@test.com',
-      }
-
-      const result = await guard.canActivate(mockExecutionContext)
-
-      expect(result).toBe(true)
-
-      process.env.NODE_ENV = originalEnv
-    })
-
     it('should allow user with admin role', async () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'

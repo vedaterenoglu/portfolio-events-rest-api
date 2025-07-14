@@ -25,18 +25,6 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Authorization token not found')
     }
 
-    // TEST MODE: Accept mock token for development
-    if (
-      process.env.NODE_ENV === 'development' &&
-      token.includes('mock-signature')
-    ) {
-      request.user = {
-        sub: 'test-user-id',
-        email: 'test@test.com',
-      }
-      return true
-    }
-
     try {
       const session = await clerkClient.verifyToken(token)
       request.user = session

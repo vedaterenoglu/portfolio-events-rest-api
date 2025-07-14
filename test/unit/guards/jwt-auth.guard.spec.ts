@@ -62,25 +62,6 @@ describe('JwtAuthGuard', () => {
       )
     })
 
-    it('should accept mock token in development mode', async () => {
-      const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
-
-      mockRequest.headers = {
-        authorization: 'Bearer test-mock-signature-token',
-      }
-
-      const result = await guard.canActivate(mockExecutionContext)
-
-      expect(result).toBe(true)
-      expect(mockRequest.user).toEqual({
-        sub: 'test-user-id',
-        email: 'test@test.com',
-      })
-
-      process.env.NODE_ENV = originalEnv
-    })
-
     it('should accept valid Clerk token and attach user to request', async () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
