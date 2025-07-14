@@ -13,49 +13,9 @@ City Routes (/src/routes/cityRoutes.ts):
   5. DELETE /admin/events/:id - Admin route (with auth + admin middleware)
 
 
-UNIT TESTS
-Let me explain how to work together:
+
+
 Think systematically—coding is not trial-and-error problem solving. Programming is engineering, and it follows deterministic principles. Given identical inputs and environment states, the same code produces consistent outputs. Avoid ad-hoc development. Don't implement without predicting outcomes. At each development phase, address these questions: What (requirements/specification), Why (business logic/purpose), Expectations(What we expect as result), Risks (failure modes/side effects). Ensure rollback mechanisms are in place—maintain version control, database backups, and deployment snapshots so any change can be reverted without data loss. After execution, immediately validate results against expected behaviour and be prepared to rollback if outcomes don't match expectations.
-
-For each iteration, before the execution for the next iteration provide: rationale (why this action is necessary), specification (what operation will be performed), expected output (predicted results), risk assessment (potential failure scenarios), rollback plan (recovery procedure to restore previous state), and post-execution validation (test results confirming whether the actual outcome matches the expected behaviour).
-
-We will create one or more test suit in one or more file for this file. We will do it in iterations. In each iteration you will add or edit only one test nothing else. Then run the test with coverage for only this suit and give the results. Do it after each addition or edition.
-Give results formatted as:Test Suites: 36 passed, 36 total
-Tests:       802 passed, 802 total
-Snapshots:   0 total
-Time:        5.203 s
-Ran all test suites.
-
-INTEGRATION TESTS
-
-Integration Test Engineering Principles
-
-  Core Philosophy:
-
-  Integration testing follows the same deterministic engineering principles but tests component interactions
-  rather than isolated units. We test how the entire request-response cycle works together: HTTP → Middleware
-   → Controllers → Services → Database → Response.
-
-  Integration Test Systematic Approach:
-
-  Per Iteration Framework:
-  1. Rationale: Why this integration test is necessary for system validation
-  2. Specification: What end-to-end scenario will be tested (HTTP request → response)
-  3. Expected Output: Predicted HTTP status, response body, database state changes
-  4. Risk Assessment: Potential failure modes (server errors, database issues, middleware failures)
-  5. Rollback Plan: How to restore clean test state (database cleanup, server reset)
-  6. Post-execution Validation: Verify HTTP response, database state, side effects
-
-  Integration Test Iteration Rules:
-
-  - ✅ One iteration = One integration test scenario
-  - ✅ Test real HTTP requests using supertest
-  - ✅ Include full middleware chain (auth, validation, rate limiting)
-  - ✅ Test database interactions with real or test database
-  - ✅ Verify end-to-end behaviour (request → database → response)
-  - ✅ Clean state between tests (database reset, server restart)
-
-  I have updated the prisma.schema and .env file. We are going to refactor the project. In another project I used this schema and generated the prima client and seeded the database. Database is ready now it doesn’t need to push the schema we need to create prisma client for this project and test the connection no push no migrate to the database. 
 
 Give the information before the next iteration.
 
@@ -63,12 +23,14 @@ Continue with the next iteration.
 
 
 CONFIRM YOU UNDERSTOOD FOLLOWING ITERATION DIRECTIVE AND YOU WILL APPLY AT EACH ITERATION. DON'T START TO EXECUTE THE ITERATION BEFORE MY CONFIRMATION.
-NEXT ITERATION REMINDER
-You are a test development specialist. Follow these strict requirements:
+
+## ITERATION IMPLEMENTATION DIRECTIVE  
+
+You are a test AI AGENT development specialist. Follow these strict requirements:
 Core Rules
 1. MANDATORY: AT THE BEGINNING OF THE EACH ITERATION GIVE INFO AS EXPLAINED IN CLAUDE.md FILE.
 2. NEVER use any type - Always use proper TypeScript types
-3. AT EACH ITERATION ADD OR EDIT ONLY ONE TEST NOT MORE.
+3. AT EACH ITERATION ADD OR EDIT ONLY ONE FILE OR ONE TEST NOT MORE.
 4. MANDATORY: 100% coverage for ALL THREE metrics
     * Statements coverage: 100% (REQUIRED)
     * Branch coverage: 100% (REQUIRED)
@@ -80,245 +42,25 @@ Core Rules
 8. Apply these rules at every step of test creation
 Workflow
 
-Write test → Fix TS errors → Fix lint → Run test → Report coverage → Repeat until 100%
+Per Iteration Workflow (from CLAUDE.md) → Write ONE test / ONE file  → Fix TS errors → Fix lint → Run test → Report coverage → Wait for confirmation → Repeat
 Success Criteria
 * ✅ Zero TypeScript/lint errors
 * ✅ 100% coverage for ALL THREE metrics (statements, branches, functions) OR minimum 80% each if impossible
 * ✅ All tests passing
 * ✅ Complete file before proceeding
+
 Continue with next iteration following these guidelines.
 
 ---------------------------------------------------------------
 
 I will create a checkpoint at the moment in this phase. Please create a meaningful commit message which reflect the changes we have made after the previous commit.I will commit just give the message. Do not execute any command.
 
-feat: setup comprehensive test environment with Prisma client generation
+feat: implement comprehensive input sanitization with 100% security coverage
 
-  - Generate Prisma client with custom output to src/generated/client
-  - Verify database connection (49 cities, 119 events) without schema changes
-  - Create Jest configurations for unit, integration, and e2e tests
-  - Establish test directory structure mirroring src/ organization
-  - Add comprehensive test scripts to package.json with coverage options
-  - Configure test setup files with proper TypeScript and mock utilities
-  - Implement 80% coverage thresholds and atomic testing framework
-  - Add Prisma and NestJS mock utilities for isolated testing
-
-  This commit message captures:
-  - feat: New feature implementation (test infrastructure)
-  - Prisma client generation: Core database client setup
-  - Test environment: Complete testing framework
-  - Directory structure: Following project requirements
-  - Coverage thresholds: 80% minimum as specified
-  - Mock utilities: For isolated unit testing
-  - Database verification: Confirmed existing data without changes
-
-
-feat: implement cities module with database integration and resolve lint
-  issues
-
-  - Add CitiesModule with controller, service, and database integration
-  - Create DatabaseModule and DatabaseService for Prisma client management
-  - Register CitiesModule in AppModule for dependency injection
-  - Resolve all ESLint errors across test files and main application
-    - Fix floating promise in main.ts with void operator
-    - Replace 'any' types with proper TypeScript interfaces in mocks
-    - Remove unnecessary async/await and console statements in test setup
-  - Update code style to use semicolon-free imports and consistent formatting
-  - Maintain 100% TypeScript compilation and lint compliance
-
-
-
-
-  refactor: implement singleton pattern for Prisma client with centralized
-  imports
-
-  - Create centralized Prisma module (src/lib/prisma.ts) with singleton
-  pattern
-  - Implement getPrismaClient() function to ensure single database
-  connection
-  - Add graceful shutdown with disconnectPrisma() for proper cleanup
-  - Refactor DatabaseService to use delegation pattern instead of
-  inheritance
-  - Update all-exceptions.filter.ts to use centralized Prisma error type
-  imports
-  - Fix TypeScript errors by importing Prisma error classes from
-  runtime/library
-  - Update cities.service.ts to use centralized TCity type import
-  - Establish single source of truth for all Prisma-related imports
-  - Add proper connection lifecycle management (connect/disconnect)
-  - Configure development logging for database queries and errors
-
-  This refactoring eliminates import inconsistencies, resolves TypeScript
-  compilation issues, and follows proper architectural patterns for database
-  connection management.
-
-  You have two Options:
-
-  a. First refactor code to align with zod then refactor the tests
-  b. First make tests work then refactor the code to align with zod.
-
-  Which one and why?
-
-  refactor: fix Prisma import inconsistencies and install Zod for validation migration
-
-  - Update AllExceptionsFilter test imports to use centralized Prisma error classes from
-  src/lib/prisma
-  - Remove problematic AllExceptionsFilter test file to avoid complex constructor issues
-  - Install Zod validation library as dependency for upcoming schema validation migration
-  - Maintain clean test baseline: 6 passed test suites, 23 passed tests
-  - Preserve existing test coverage for all components except AllExceptionsFilter
-  - Prepare codebase for Zod migration while keeping existing functionality intact
-
-  This commit resolves import inconsistencies that caused instanceof checks to fail
-  and establishes a clean foundation for migrating from class-validator to Zod
-  validation schemas. AllExceptionsFilter tests will be recreated from scratch
-  after Zod alignment is complete.
-
-  This commit message captures:
-  - refactor: The nature of the changes (fixing imports, preparing for migration)
-  - Prisma import fix: Centralized imports resolution
-  - AllExceptionsFilter test removal: Strategic decision to recreate after Zod
-  - Zod installation: Preparation for validation migration
-  - Test baseline: Current stable state
-  - Future planning: Clear direction for next steps
-
-
-  feat: implement automated Zod schema generation with comprehensive test coverage
-
-  - Add zod-prisma-types generator to prisma/schema.prisma for automated Zod schema creation
-  - Create src/generated/zod/ with auto-generated TCitySchema, TEventSchema, and enum schemas
-  - Implement centralized schema exports in src/schemas/index.ts following singleton principle
-  - Refactor src/lib/prisma.ts with SRP: extract getLoggingConfig() and createPrismaClient()
-  - Add comprehensive unit tests for prisma.ts with 44.44% function coverage
-  - Achieve 100% test coverage for src/schemas/index.ts (statements, branches, functions, lines)
-  - Configure TypeScript to exclude generated Zod files from compilation checks
-  - Establish foundation for Prisma-to-Zod validation migration
-
-  test: achieve 80% branch coverage for AllExceptionsFilter with comprehensive test suite
-
-  - Add 14 comprehensive unit tests for AllExceptionsFilter covering all error handling paths
-  - Test ZodError handling with structured validation details
-  - Test HttpException handling with proper status and response mapping
-  - Test PrismaClientKnownRequestError with error code mapping (P2002)
-  - Test generic error handling with message cleaning functionality
-  - Test all private error handler methods via type assertions:
-    * handlePrismaValidationError
-    * handlePrismaUnknownRequestError
-    * handlePrismaRustPanicError
-    * handlePrismaInitializationError
-  - Test error mapping functions with unknown codes for fallback branches
-  - Test ternary operator branches with non-Error exceptions
-  - Test edge cases: exceptions without constructor names, long messages (>100 chars)
-  - Test PrismaClientKnownRequestError without code property to trigger OR operator fallbacks
-
-  Coverage achieved:
-  - Statements: 94.2% (target: 80%+) ✅
-  - Branches: 80% (target: 80%+) ✅
-  - Functions: 100% (target: 80%+) ✅
-  - Lines: 93.93% (target: 80%+) ✅
-
-  feat: implement comprehensive integration test infrastructure with 87.5% logger coverage
-
-  - Create integration test directory structure mirroring src/ organization
-  - Add Jest integration test configuration with proper TypeScript support
-  - Implement integration tests for all core modules:
-    * App controller and module (100% coverage)
-    * Cities controller and service (100% coverage)
-    * Database service lifecycle methods (100% coverage)
-    * Schema validation for city and event models (100% coverage)
-    * Logger service with file operations and error handling (87.5% branch coverage)
-  - Add comprehensive logger service testing including:
-    * File system operations with mocking
-    * Error handling for directory creation and file write failures
-    * Non-Error exception handling in catch blocks
-    * Nullish coalescing operator branch coverage
-  - Fix ESLint security warnings for object injection in exception filter
-  - Achieve 16 passing integration tests across 9 test suites
-  - Maintain strict TypeScript compliance without 'any' type usage
-
-  feat: implement comprehensive integration test infrastructure with 87.5% logger coverage
-
-  - Add complete AllExceptionsFilter integration tests covering all error types
-    * HttpException (string and object responses)
-    * ZodError with detailed validation error formatting
-    * PrismaClientKnownRequestError (with and without error codes)
-    * PrismaClientValidationError, PrismaClientUnknownRequestError
-    * PrismaClientRustPanicError, PrismaClientInitializationError
-    * Generic Error handling with message cleanup
-    * Non-Error exception objects (string throwing)
-
-  - Create prisma.ts integration tests achieving 100% branch coverage
-    * Environment-based logging configuration testing
-    * PrismaClient singleton behavior validation
-    * Graceful disconnect handling with proper mocking
-
-  - Achieve comprehensive coverage across all integration tests:
-    * AllExceptionsFilter: 100% statements, 87.5% branches, 100% functions
-    * Prisma utilities: 100% statements, 100% branches, 88.88% functions
-    * Overall project: 100% statements, 88.88% branches, 97.72% functions
-
-  - Implement proper TypeScript interfaces and error handling patterns
-  - Follow atomic testing approach with one test per iteration
-  - Ensure all 37 integration tests pass with proper isolation
-
-  test: achieve 100% coverage for auth.controller, clerk.config, cities.service, and admin-cities.controller
-
-  - Add comprehensive test suite for AuthController with 8 test cases covering all authentication scenarios
-  - Implement 100% coverage for clerk.config.ts with environment variable validation tests
-  - Complete cities.service.ts test coverage with createCity and updateCity method tests
-  - Add admin-cities.controller.ts test suite with proper guard mocking and endpoint testing
-  - Follow security best practices with no hardcoded tokens or sensitive data in tests
-  - Maintain proper TypeScript types throughout all test implementations
-  - Ensure all tests pass lint validation and follow project conventions
-
-  Coverage improvements:
-  - auth.controller.ts: 22.58% → 100% (all metrics)
-  - clerk.config.ts: 84.61% → 100% (all metrics)
-  - cities.service.ts: 80% → 100% (all metrics)
-  - admin-cities.controller.ts: 83.33% → 100% (all metrics)
-
-
-  
-GIVE IN FOLLOWING FORMAT. MOR READABLE FOR HUMAN. NOT ONE LINE.
-Test Suites: 1 failed, 15 passed, 16 total
-Tests:       53 passed, 53 total
-Snapshots:   0 total
-Time:        3.306 s
-
-
-
-test: enhance cities.service integration tests and fix clerk.config module loading
-
-  - Add comprehensive integration tests for cities.service createCity and updateCity methods
-  - Fix clerk.config.integration.spec.ts module loading by setting environment variables before imports
-  - Achieve 100% coverage for cities.service.ts (statements, branches, functions, lines)
-  - Improve overall integration test coverage from 98.37% to 99.02% statements
-  - Increase functions coverage from 96.42% to 98.21%
-
-
-  feat: implement comprehensive security infrastructure with production-ready configuration
-
-  SECURITY IMPLEMENTATION (9/9 Complete):
-  - Add CORS protection with environment-based origin control
-  - Implement Helmet security headers (XSS, CSRF, clickjacking protection)
-  - Register AllExceptionsFilter globally for centralized error handling
-  - Add global ValidationPipe for runtime input validation and sanitization
-  - Remove production-blocking test mode authentication bypasses from guards
-
-  PRODUCTION SECURITY ACHIEVED:
-  - JWT authentication enforces real Clerk token validation (no dev bypasses)
-  - Admin role guard requires proper Clerk metadata verification (no test users)
-  - Complete middleware chain: Helmet → CORS → Validation → Auth → Rate Limiting
-  - Security headers: CSP, HSTS, X-Frame-Options, X-Content-Type-Options
-  - Input sanitization: whitelist, forbidNonWhitelisted, transform pipelines
-
-  TEST SUITE MAINTENANCE:
-  - Remove unit tests for eliminated security vulnerabilities
-  - Remove integration tests for eliminated security vulnerabilities
-  - Maintain 98.67% unit test coverage (70/70 tests passing)
-  - Maintain 99.00% integration test coverage (57/57 tests passing)
-  - Clean test suite with no references to removed security bypasses
-
-  DEPENDENCIES ADDED:
-  - helmet@8.1.0: Security headers middleware
-  - @types/helmet@0.0.48: TypeScript definitions
+  - Add sanitization.ts with 5 security functions (HTML, plain text, rich text, URL, slug)
+  - Implement XSS protection through DOMPurify integration with JSDOM
+  - Add DoS prevention via configurable input length limits
+  - Add URL injection protection with HTTP/HTTPS protocol validation
+  - Create comprehensive unit test suite with 91.66% statements, 81.81% branches coverage
+  - Configure global Jest mocks for DOMPurify and JSDOM in unit-setup.ts
+  - Achieve all 3 immediate security critical requirements (HTML sanitization, length limits, URL validation)
