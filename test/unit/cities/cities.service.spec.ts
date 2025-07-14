@@ -7,6 +7,10 @@ import { TCity } from '../../../src/generated/client'
 interface MockDatabaseService {
   tCity: {
     findMany: jest.MockedFunction<() => Promise<TCity[]>>
+    create: jest.MockedFunction<(args: { data: unknown }) => Promise<TCity>>
+    update: jest.MockedFunction<
+      (args: { where: { citySlug: string }; data: unknown }) => Promise<TCity>
+    >
   }
 }
 
@@ -37,6 +41,8 @@ describe('CitiesService', () => {
     mockDatabaseService = {
       tCity: {
         findMany: jest.fn(),
+        create: jest.fn(),
+        update: jest.fn(),
       },
     }
 
@@ -88,6 +94,62 @@ describe('CitiesService', () => {
         count: 0,
         cities: [],
       })
+    })
+  })
+
+  describe('createCity', () => {
+    it('should create and return a new city', async () => {
+      const createCityData = {
+        citySlug: 'new-city',
+        city: 'New City',
+        url: 'https://example.com/new-city.jpg',
+        alt: 'New city image',
+      }
+
+      const expectedCity: TCity = {
+        ...createCityData,
+        createdAt: new Date('2023-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2023-01-01T00:00:00.000Z'),
+      }
+
+      mockDatabaseService.tCity.create.mockResolvedValue(expectedCity)
+
+      const result = await service.createCity(createCityData)
+
+      expect(mockDatabaseService.tCity.create).toHaveBeenCalledWith({
+        data: createCityData,
+      })
+      expect(result).toEqual(expectedCity)
+    })
+  })
+
+  describe('updateCity', () => {
+    it('should update and return the updated city', async () => {
+      const citySlug = 'existing-city'
+      const updateCityData = {
+        city: 'Updated City Name',
+        url: 'https://example.com/updated-city.jpg',
+        alt: 'Updated city image',
+      }
+
+      const expectedUpdatedCity: TCity = {
+        citySlug,
+        city: 'Updated City Name',
+        url: 'https://example.com/updated-city.jpg',
+        alt: 'Updated city image',
+        createdAt: new Date('2023-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2023-01-02T00:00:00.000Z'),
+      }
+
+      mockDatabaseService.tCity.update.mockResolvedValue(expectedUpdatedCity)
+
+      const result = await service.updateCity(citySlug, updateCityData)
+
+      expect(mockDatabaseService.tCity.update).toHaveBeenCalledWith({
+        where: { citySlug },
+        data: updateCityData,
+      })
+      expect(result).toEqual(expectedUpdatedCity)
     })
   })
 })

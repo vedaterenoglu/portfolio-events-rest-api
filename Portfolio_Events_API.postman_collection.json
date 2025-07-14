@@ -1,0 +1,271 @@
+{
+  "info": {
+    "name": "Portfolio Events API",
+    "description": "Complete API collection for testing the Portfolio Events REST API with rate limiting, validation, and error handling tests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3060",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "System Endpoints",
+      "item": [
+        {
+          "name": "Root - Hello World",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cities API",
+      "item": [
+        {
+          "name": "Get All Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cities",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cities"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events API (Future)",
+      "item": [
+        {
+          "name": "Get All Events (Not Implemented)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events with Pagination (Future)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?page=0&limit=12&sort=date&order=asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "12"
+                },
+                {
+                  "key": "sort",
+                  "value": "date"
+                },
+                {
+                  "key": "order",
+                  "value": "asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Events by City (Future)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?city=austin&search=music",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "austin"
+                },
+                {
+                  "key": "search",
+                  "value": "music"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Rate Limiting Tests",
+      "item": [
+        {
+          "name": "Test Rate Limit - Request 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Rate Limit - Request 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Rate Limit - Request 3",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test Rate Limit - Request 4 (Should Fail)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Handling Tests",
+      "item": [
+        {
+          "name": "404 - Non-existent Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/nonexistent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "nonexistent"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "404 - Events Endpoint (Not Implemented)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Endpoints (Future - With Auth)",
+      "item": [
+        {
+          "name": "Create City (Future)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"citySlug\": \"test-city\",\n  \"city\": \"Test City\",\n  \"url\": \"https://example.com/image.jpg\",\n  \"alt\": \"Test city image\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/cities",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "cities"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event (Future)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Event\",\n  \"slug\": \"test-event\",\n  \"city\": \"Test City\",\n  \"location\": \"Test Venue\",\n  \"date\": \"2024-12-25T19:00:00.000Z\",\n  \"organizer\": \"Test Organizer\",\n  \"image\": \"https://example.com/event.jpg\",\n  \"description\": \"A test event for demonstration\",\n  \"price\": 25.00,\n  \"citySlug\": \"test-city\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "events"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

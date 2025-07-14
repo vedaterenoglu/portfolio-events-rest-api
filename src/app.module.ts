@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common'
 import { APP_GUARD } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 
+import { AdminModule } from './admin/admin.module'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { AuthModule } from './auth/auth.module'
 import { CitiesModule } from './cities/cities.module'
 import { DatabaseModule } from './database/database.module'
 import { LoggerModule } from './services/logger/logger.module'
@@ -12,6 +14,8 @@ import { LoggerModule } from './services/logger/logger.module'
   imports: [
     DatabaseModule,
     CitiesModule,
+    AdminModule,
+    AuthModule,
     ThrottlerModule.forRoot([
       // todo: request must satisfy both short and long limits
       { name: 'short', ttl: 1000, limit: 3 },

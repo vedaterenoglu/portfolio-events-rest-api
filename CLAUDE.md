@@ -1,5 +1,28 @@
 # AI Agent Documentation - Portfolio Events API
 
+## ⚠️ IMPORTANT: Production Security Notice
+
+**REMOVE TEST MODE BYPASSES BEFORE PRODUCTION DEPLOYMENT**
+
+The following test-only authentication bypasses MUST be removed before deploying to production:
+
+1. **File: `src/guards/jwt-auth.guard.ts`**
+   - Remove the entire test mode block (lines ~28-35) that accepts mock tokens
+   - This bypass allows fake tokens in development mode
+
+2. **File: `src/guards/admin-role.guard.ts`**
+   - Remove the entire test mode block (lines ~35-38) that allows test-user-id
+   - This bypass skips admin role verification for test users
+
+**Why:** These bypasses are ONLY for local development testing without a frontend. In production, they pose a serious security risk by allowing unauthorized access to admin endpoints.
+
+**Production Requirements:**
+- Real Clerk JWT tokens from authenticated users
+- Proper admin role set in Clerk user metadata
+- NODE_ENV=production in environment variables
+
+---
+
 ## The crucial rules for AI Agent Developer
 
 ## Core Engineering Principles

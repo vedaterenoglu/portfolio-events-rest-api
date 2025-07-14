@@ -48,8 +48,10 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config ./test/jest-unit.json --runInBand"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.13.23",
     "@nestjs/common": "^11.1.3",
     "@nestjs/core": "^11.1.3",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.1.3",
     "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.11.1",
