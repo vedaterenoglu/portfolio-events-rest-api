@@ -72,9 +72,9 @@ describe('CitiesController', () => {
         .spyOn(citiesService, 'getAllCities')
         .mockResolvedValue(mockCitiesResponse)
 
-      const result = await controller.getAllCities()
+      const result = await controller.getAllCities({})
 
-      expect(getAllCitiesSpy).toHaveBeenCalledWith()
+      expect(getAllCitiesSpy).toHaveBeenCalledWith({})
       expect(result).toEqual(mockCitiesResponse)
 
       getAllCitiesSpy.mockRestore()

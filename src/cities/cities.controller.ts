@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Query, UsePipes } from '@nestjs/common'
 
+import { ZodValidationPipe } from '../pipes/zod-validation.pipe'
+import { CitiesQuerySchema, CitiesQuery } from '../schemas/cities-query.schema'
 import { City } from '../schemas/city.schema'
 
 import { CitiesService } from './cities.service'
@@ -14,7 +16,10 @@ export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
   @Get()
-  async getAllCities(): Promise<CitiesResponse> {
-    return this.citiesService.getAllCities()
+  @UsePipes(new ZodValidationPipe(CitiesQuerySchema))
+  async getAllCities(
+    @Query() query: Partial<CitiesQuery>,
+  ): Promise<CitiesResponse> {
+    return this.citiesService.getAllCities(query)
   }
 }

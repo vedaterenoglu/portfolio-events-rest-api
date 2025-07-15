@@ -56,12 +56,20 @@ describe('CitiesService Integration', () => {
         .spyOn(databaseService.tCity, 'findMany')
         .mockResolvedValue(mockCities)
 
+      const countSpy = jest
+        .spyOn(databaseService.tCity, 'count')
+        .mockResolvedValue(mockCities.length)
+
       const result = await service.getAllCities()
 
       expect(result).toEqual({ count: mockCities.length, cities: mockCities })
       expect(findManySpy).toHaveBeenCalledWith({
+        where: {},
         orderBy: { city: 'asc' },
+        take: 50,
+        skip: 0,
       })
+      expect(countSpy).toHaveBeenCalledWith({ where: {} })
     })
   })
 

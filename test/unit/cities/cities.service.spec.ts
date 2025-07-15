@@ -11,6 +11,7 @@ interface MockDatabaseService {
     update: jest.MockedFunction<
       (args: { where: { citySlug: string }; data: unknown }) => Promise<TCity>
     >
+    count: jest.MockedFunction<() => Promise<number>>
   }
 }
 
@@ -43,6 +44,7 @@ describe('CitiesService', () => {
         findMany: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+        count: jest.fn(),
       },
     }
 
@@ -70,11 +72,18 @@ describe('CitiesService', () => {
   describe('getAllCities', () => {
     it('should return cities with count when database returns data', async () => {
       mockDatabaseService.tCity.findMany.mockResolvedValue(mockCities)
+      mockDatabaseService.tCity.count.mockResolvedValue(2)
 
       const result = await service.getAllCities()
 
       expect(mockDatabaseService.tCity.findMany).toHaveBeenCalledWith({
+        where: {},
         orderBy: { city: 'asc' },
+        take: 50,
+        skip: 0,
+      })
+      expect(mockDatabaseService.tCity.count).toHaveBeenCalledWith({
+        where: {},
       })
       expect(result).toEqual({
         count: 2,
@@ -84,11 +93,18 @@ describe('CitiesService', () => {
 
     it('should return empty cities with zero count when database returns empty array', async () => {
       mockDatabaseService.tCity.findMany.mockResolvedValue([])
+      mockDatabaseService.tCity.count.mockResolvedValue(0)
 
       const result = await service.getAllCities()
 
       expect(mockDatabaseService.tCity.findMany).toHaveBeenCalledWith({
+        where: {},
         orderBy: { city: 'asc' },
+        take: 50,
+        skip: 0,
+      })
+      expect(mockDatabaseService.tCity.count).toHaveBeenCalledWith({
+        where: {},
       })
       expect(result).toEqual({
         count: 0,

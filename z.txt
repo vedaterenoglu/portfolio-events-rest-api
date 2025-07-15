@@ -14,6 +14,8 @@ City Routes (/src/routes/cityRoutes.ts):
 
   Read the CLAUDE.md file to understand the iteration workflow and the consequences of violating the rules. Give a feedback with your own words.
 ----------------------------------------------------------------------------------------
+proceed without violating iteration workflow.
+----------------------------------------------------------------------------------------
 MY RESULTS ARE
 src/pipes                   |     100 |       75 |     100 |     100 |                   
   zod-validation.pipe.ts     |     100 |       75 |     100 |     100 | 22 
@@ -21,10 +23,7 @@ src/pipes                   |     100 |       75 |     100 |     100 |
 YOU ARE CONTINUOUSLY GIVING WRONG INFORMATION ABOUT THE RESULTS. IT CAUSES TIME WASTING.
 
 ----------------------------------------------------------------------------------------
-
 SEARCH INTERNET, MCP SERVERS ETC. FIND THE SOLUTION.
-
-
 ----------------------------------------------------------------------------------------
 
 Think systematically—coding is not trial-and-error problem solving. Programming is engineering, and it follows deterministic principles. Given identical inputs and environment states, the same code produces consistent outputs. Avoid ad-hoc development. Don't implement without predicting outcomes. At each development phase, address these questions: What (requirements/specification), Why (business logic/purpose), Expectations(What we expect as result), Risks (failure modes/side effects). Ensure rollback mechanisms are in place—maintain version control, database backups, and deployment snapshots so any change can be reverted without data loss. After execution, immediately validate results against expected behaviour and be prepared to rollback if outcomes don't match expectations.
@@ -78,3 +77,12 @@ feat: implement comprehensive integration test coverage for sanitization securit
   - Achieve 98.91% overall integration coverage for statements, 89.74% branches, 98.64% functions
   - Resolve cascading test failures in city.schema and event.schema integration tests
   - Complete all 3 immediate security critical requirements with comprehensive test validation
+
+
+test: enhance cities query schema unit tests with HTML sanitization and limit validation
+
+  - Add HTML sanitization test for search parameter XSS protection
+  - Add limit parameter validation and transformation test
+  - Maintain atomic testing approach with one test per iteration
+  - Achieve stable 87.5% branch coverage for query parameter validation
+  - Total tests increased from 87 to 88 with all passing
