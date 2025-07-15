@@ -7,12 +7,20 @@ import {
   UseGuards,
   HttpStatus,
   HttpCode,
+  UsePipes,
 } from '@nestjs/common'
 
 import { CitiesService } from '../cities/cities.service'
 import { AdminRoleGuard } from '../guards/admin-role.guard'
 import { JwtAuthGuard } from '../guards/jwt-auth.guard'
-import { CreateCity, UpdateCity, City } from '../schemas/city.schema'
+import { ZodValidationPipe } from '../pipes/zod-validation.pipe'
+import {
+  CreateCity,
+  UpdateCity,
+  City,
+  CreateCitySchema,
+  UpdateCitySchema,
+} from '../schemas/city.schema'
 
 @Controller('api/admin/cities')
 @UseGuards(JwtAuthGuard, AdminRoleGuard)
@@ -21,12 +29,14 @@ export class AdminCitiesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UsePipes(new ZodValidationPipe(CreateCitySchema))
   async createCity(@Body() createCityData: CreateCity): Promise<City> {
     return this.citiesService.createCity(createCityData)
   }
 
   @Put(':citySlug')
   @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(UpdateCitySchema))
   async updateCity(
     @Param('citySlug') citySlug: string,
     @Body() updateCityData: UpdateCity,
