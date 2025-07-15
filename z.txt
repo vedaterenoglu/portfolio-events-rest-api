@@ -1,10 +1,14 @@
 City Routes (/src/routes/cityRoutes.ts):
 
+CONFIRM THE FOLLOWING ENDPOINS ARE CREATE FULLY SECURED AND TESTED.
+
   1. GET /cities - Public route (with rate limiting)
   2. POST /admin/cities - Admin route (with auth + admin middleware)
   3. PUT /admin/cities/:id - Admin route (with auth + admin middleware)
 
   Event Routes (/src/routes/eventRoutes.ts):
+
+  TEST AND CONFIRM THE FOLLOWING ENDPOINS ARE CREATE FULLY SECURED AND TESTED OR NOT.
 
   1. GET /events - Public route
   2. GET /events/:slug - Public route (with rate limiting)
@@ -63,20 +67,11 @@ Continue with next iteration following these guidelines.
 CHECK GIT LOGS INSPECT FROM THE LATEST COMMIT UP TO NOW CHANGES AND CREATE A MEANINGFUL COMMIT MESSAGE. NOT EXECUTE COMMIT.
 -------------------------------------------------------------------------------------------------------------------
 
-   test: add comprehensive integration tests for events module and improve schema coverage
+feat: implement GET /api/events/:slug endpoint with comprehensive testing
 
-  - Add EventsController integration tests with query parameter validation
-  - Add EventsService integration tests covering database operations and business logic
-  - Add EventsQuerySchema integration tests with HTML sanitization and fallback validation
-  - Enhance CitiesQuerySchema integration tests with parseInt fallback coverage
-  - Achieve 89.34% overall integration test branch coverage (exceeds 80% threshold)
-  - Cover complete events API request-response cycle through middleware chain
-  - Test pagination, search, sorting, and validation functionality end-to-end
-  - Implement atomic testing workflow with single test per iteration
-  - Verify schema validation, sanitization, and error handling in integration context
-
-  Integration test coverage achievements:
-  - Events module: 100% controller, service, and schema statement coverage
-  - Cities query schema: 100% branch coverage with fallback validation
-  - Events query schema: 80% branch coverage with sanitization testing
-  - 77 integration tests passing across 23 test suites
+  - Add getEventBySlug method to EventsController with parameter validation
+  - Implement getEventBySlug service method with NotFoundException handling
+  - Add comprehensive unit tests for both success and error scenarios
+  - Achieve 100% function coverage for events module (98.93% overall statements)
+  - Inherit complete security stack: rate limiting, validation, sanitization
+  - Follow atomic testing workflow with proper mock isolation

@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { DatabaseService } from '../../../src/database/database.service'
@@ -51,6 +52,7 @@ describe('EventsService', () => {
       tEvent: {
         findMany: jest.fn(),
         count: jest.fn(),
+        findUnique: jest.fn(),
       },
     }
 
@@ -108,6 +110,40 @@ describe('EventsService', () => {
 
       findManySpy.mockRestore()
       countSpy.mockRestore()
+    })
+  })
+
+  describe('getEventBySlug', () => {
+    it('should return a single event when found', async () => {
+      const mockEvent = mockEvents[0]!
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(mockEvent)
+
+      const result = await service.getEventBySlug('test-event-1')
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { slug: 'test-event-1' },
+      })
+      expect(result).toEqual(mockEvent)
+
+      findUniqueSpy.mockRestore()
+    })
+
+    it('should throw NotFoundException when event not found', async () => {
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(null)
+
+      await expect(service.getEventBySlug('non-existent-slug')).rejects.toThrow(
+        new NotFoundException("Event with slug 'non-existent-slug' not found"),
+      )
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { slug: 'non-existent-slug' },
+      })
+
+      findUniqueSpy.mockRestore()
     })
   })
 })

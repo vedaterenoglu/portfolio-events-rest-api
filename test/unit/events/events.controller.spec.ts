@@ -59,6 +59,7 @@ describe('EventsController', () => {
   beforeEach(async () => {
     const mockEventsService = {
       getAllEvents: jest.fn(),
+      getEventBySlug: jest.fn(),
     }
 
     const module: TestingModule = await Test.createTestingModule({
@@ -97,6 +98,22 @@ describe('EventsController', () => {
       expect(result).toEqual(mockEventsResponse)
 
       getAllEventsSpy.mockRestore()
+    })
+  })
+
+  describe('getEventBySlug', () => {
+    it('should return a single event when found', async () => {
+      const mockEvent = mockEvents[0]!
+      const getEventBySlugSpy = jest
+        .spyOn(eventsService, 'getEventBySlug')
+        .mockResolvedValue(mockEvent)
+
+      const result = await controller.getEventBySlug('test-event-1')
+
+      expect(getEventBySlugSpy).toHaveBeenCalledWith('test-event-1')
+      expect(result).toEqual(mockEvent)
+
+      getEventBySlugSpy.mockRestore()
     })
   })
 })

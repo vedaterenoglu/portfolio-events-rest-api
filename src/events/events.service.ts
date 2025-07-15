@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 
 import { DatabaseService } from '../database/database.service'
 import { Event } from '../schemas/event.schema'
@@ -62,5 +62,17 @@ export class EventsService {
         hasMore: offset + limit < totalCount,
       },
     }
+  }
+
+  async getEventBySlug(slug: string): Promise<Event> {
+    const event = await this.databaseService.tEvent.findUnique({
+      where: { slug },
+    })
+
+    if (!event) {
+      throw new NotFoundException(`Event with slug '${slug}' not found`)
+    }
+
+    return event
   }
 }
