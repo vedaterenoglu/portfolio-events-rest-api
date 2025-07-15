@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { APP_FILTER, APP_GUARD } from '@nestjs/core'
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler'
 
 import { AdminModule } from './admin/admin.module'
@@ -9,6 +9,7 @@ import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { CitiesModule } from './cities/cities.module'
 import { DatabaseModule } from './database/database.module'
+import { OutputSanitizationInterceptor } from './interceptors/output-sanitization.interceptor'
 import { LoggerModule } from './services/logger/logger.module'
 
 @Module({
@@ -34,6 +35,10 @@ import { LoggerModule } from './services/logger/logger.module'
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: OutputSanitizationInterceptor,
     },
   ],
 })

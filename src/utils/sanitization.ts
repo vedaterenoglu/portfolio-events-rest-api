@@ -1,7 +1,7 @@
-import DOMPurify from 'dompurify'
-import { JSDOM, DOMWindow } from 'jsdom'
+import * as DOMPurify from 'dompurify'
+import { JSDOM } from 'jsdom'
 
-const window: DOMWindow = new JSDOM('').window
+const window = new JSDOM('').window
 const purify = DOMPurify(window)
 
 export interface SanitizationConfig {
