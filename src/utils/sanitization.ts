@@ -1,8 +1,4 @@
-import * as DOMPurify from 'dompurify'
-import { JSDOM } from 'jsdom'
-
-const window = new JSDOM('').window
-const purify = DOMPurify(window)
+import * as DOMPurify from 'isomorphic-dompurify'
 
 export interface SanitizationConfig {
   allowedTags?: string[]
@@ -29,9 +25,9 @@ export const sanitizeHTML = (
   let sanitized: string
 
   if (removeHTMLCompletely) {
-    sanitized = purify.sanitize(input, { ALLOWED_TAGS: [] })
+    sanitized = DOMPurify.sanitize(input, { ALLOWED_TAGS: [] })
   } else {
-    sanitized = purify.sanitize(input, {
+    sanitized = DOMPurify.sanitize(input, {
       ALLOWED_TAGS: allowedTags,
       ALLOWED_ATTR: allowedAttributes,
       KEEP_CONTENT: true,

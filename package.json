@@ -63,6 +63,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-security": "^3.0.1",
     "helmet": "^8.1.0",
+    "isomorphic-dompurify": "^2.26.0",
     "jsdom": "^26.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
