@@ -9,6 +9,7 @@ import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { CitiesModule } from './cities/cities.module'
 import { DatabaseModule } from './database/database.module'
+import { EventsModule } from './events/events.module'
 import { OutputSanitizationInterceptor } from './interceptors/output-sanitization.interceptor'
 import { LoggerModule } from './services/logger/logger.module'
 
@@ -16,6 +17,7 @@ import { LoggerModule } from './services/logger/logger.module'
   imports: [
     DatabaseModule,
     CitiesModule,
+    EventsModule,
     AdminModule,
     AuthModule,
     ThrottlerModule.forRoot([

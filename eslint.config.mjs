@@ -59,7 +59,6 @@ export default tseslint.config(
       // 'security/detect-non-literal-regexp': 'error',
       'security/detect-non-literal-require': 'error',
 
-
       // 2. Import Order (from eslint-plugin-import)
       // Enforces a consistent order for your import statements.
       'import/order': [
@@ -88,12 +87,14 @@ export default tseslint.config(
       // You might want to adjust this based on your environment (e.g., only 'error' in production builds).
       'no-console': ['error', { allow: ['warn', 'error'] }], // Allow console.warn and console.error, but disallow log
 
-
       // 4. Stricter TypeScript Rules (beyond recommendedTypeChecked default errors)
       // Prevents common promise-related bugs where promises are not handled or awaited correctly.
       // `checksVoidReturn: false` is often necessary for NestJS methods (e.g., Guards, Interceptors)
       // that return void but internally await a promise.
-      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        { checksVoidReturn: false },
+      ],
 
       // Ensures that anything you `await` is actually an awaitable (PromiseLike).
       '@typescript-eslint/await-thenable': 'error',
@@ -116,7 +117,6 @@ export default tseslint.config(
       // 'error' for always requiring await on thenables, 'never' for preventing redundant await.
       // Often, `recommendedTypeChecked` has a good default for this. You can adjust if needed.
       // '@typescript-eslint/return-await': 'error',
-
 
       // === NEW RECOMMENDATIONS END HERE ===
     },
