@@ -23,4 +23,17 @@ describe('CitiesQuerySchema (Integration)', () => {
       expect(validationResult.data.includeEventCount).toBe(true)
     }
   })
+
+  it('should apply fallback value for invalid limit string', () => {
+    const queryParams = {
+      limit: 'invalid',
+    }
+
+    const validationResult = CitiesQuerySchema.safeParse(queryParams)
+    expect(validationResult.success).toBe(true)
+
+    if (validationResult.success) {
+      expect(validationResult.data.limit).toBe(50)
+    }
+  })
 })
