@@ -53,6 +53,21 @@ describe('EventsService', () => {
         findMany: jest.fn(),
         count: jest.fn(),
         findUnique: jest.fn(),
+        findFirst: jest
+          .fn()
+          .mockImplementation(
+            (
+              args:
+                | { select?: { id?: boolean }; orderBy?: unknown }
+                | undefined,
+            ) => {
+              if (args && args.select && args.select.id) {
+                return Promise.resolve({ id: 2 })
+              }
+              return Promise.resolve(null)
+            },
+          ),
+        create: jest.fn(),
       },
     }
 
@@ -111,6 +126,59 @@ describe('EventsService', () => {
       findManySpy.mockRestore()
       countSpy.mockRestore()
     })
+
+    it('should return events response with search functionality', async () => {
+      const findManySpy = jest
+        .spyOn(databaseService.tEvent, 'findMany')
+        .mockResolvedValue(mockEvents)
+      const countSpy = jest
+        .spyOn(databaseService.tEvent, 'count')
+        .mockResolvedValue(2)
+
+      const result: EventsResponse = await service.getAllEvents({
+        search: 'test',
+        limit: 10,
+        offset: 5,
+      })
+
+      expect(findManySpy).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { name: { contains: 'test', mode: 'insensitive' } },
+            { description: { contains: 'test', mode: 'insensitive' } },
+            { city: { contains: 'test', mode: 'insensitive' } },
+            { location: { contains: 'test', mode: 'insensitive' } },
+            { organizerName: { contains: 'test', mode: 'insensitive' } },
+          ],
+        },
+        skip: 5,
+        take: 10,
+        orderBy: { date: 'desc' },
+      })
+      expect(countSpy).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { name: { contains: 'test', mode: 'insensitive' } },
+            { description: { contains: 'test', mode: 'insensitive' } },
+            { city: { contains: 'test', mode: 'insensitive' } },
+            { location: { contains: 'test', mode: 'insensitive' } },
+            { organizerName: { contains: 'test', mode: 'insensitive' } },
+          ],
+        },
+      })
+      expect(result).toEqual({
+        count: 2,
+        events: mockEvents,
+        pagination: {
+          limit: 10,
+          offset: 5,
+          hasMore: false,
+        },
+      })
+
+      findManySpy.mockRestore()
+      countSpy.mockRestore()
+    })
   })
 
   describe('getEventBySlug', () => {
@@ -144,6 +212,100 @@ describe('EventsService', () => {
       })
 
       findUniqueSpy.mockRestore()
+    })
+  })
+
+  describe('createEvent', () => {
+    it('should create a new event with auto-generated ID', async () => {
+      const createEventData = {
+        name: 'New Test Event',
+        slug: 'new-test-event',
+        city: 'New Test City',
+        citySlug: 'new-test-city',
+        location: 'New Test Location',
+        date: new Date('2024-01-01T19:00:00.000Z'),
+        organizerName: 'New Test Organizer',
+        imageUrl: 'https://example.com/new-event.jpg',
+        alt: 'New test event image',
+        description: 'New test event description',
+        price: 5000,
+      }
+
+      const mockCreatedEvent = {
+        id: 3,
+        ...createEventData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const findFirstSpy = jest.spyOn(databaseService.tEvent, 'findFirst')
+      const createSpy = jest
+        .spyOn(databaseService.tEvent, 'create')
+        .mockResolvedValue(mockCreatedEvent as TEvent)
+
+      const result = await service.createEvent(createEventData)
+
+      expect(findFirstSpy).toHaveBeenCalledWith({
+        orderBy: { id: 'desc' },
+        select: { id: true },
+      })
+      expect(createSpy).toHaveBeenCalledWith({
+        data: {
+          ...createEventData,
+          id: 3,
+        },
+      })
+      expect(result).toEqual(mockCreatedEvent)
+
+      findFirstSpy.mockRestore()
+      createSpy.mockRestore()
+    })
+
+    it('should create the first event with ID 1 when no existing events', async () => {
+      const createEventData = {
+        name: 'First Test Event',
+        slug: 'first-test-event',
+        city: 'First Test City',
+        citySlug: 'first-test-city',
+        location: 'First Test Location',
+        date: new Date('2024-02-01T19:00:00.000Z'),
+        organizerName: 'First Test Organizer',
+        imageUrl: 'https://example.com/first-event.jpg',
+        alt: 'First test event image',
+        description: 'First test event description',
+        price: 1000,
+      }
+
+      const mockCreatedEvent = {
+        id: 1,
+        ...createEventData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const findFirstSpy = jest
+        .spyOn(databaseService.tEvent, 'findFirst')
+        .mockResolvedValue(null)
+      const createSpy = jest
+        .spyOn(databaseService.tEvent, 'create')
+        .mockResolvedValue(mockCreatedEvent as TEvent)
+
+      const result = await service.createEvent(createEventData)
+
+      expect(findFirstSpy).toHaveBeenCalledWith({
+        orderBy: { id: 'desc' },
+        select: { id: true },
+      })
+      expect(createSpy).toHaveBeenCalledWith({
+        data: {
+          ...createEventData,
+          id: 1,
+        },
+      })
+      expect(result).toEqual(mockCreatedEvent)
+
+      findFirstSpy.mockRestore()
+      createSpy.mockRestore()
     })
   })
 })

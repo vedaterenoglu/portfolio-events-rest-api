@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 
 import { DatabaseService } from '../database/database.service'
-import { Event } from '../schemas/event.schema'
+import { Event, CreateEvent } from '../schemas/event.schema'
 import { EventsQuery } from '../schemas/events-query.schema'
 
 export interface EventsResponse {
@@ -74,5 +74,22 @@ export class EventsService {
     }
 
     return event
+  }
+
+  async createEvent(createEventData: CreateEvent): Promise<Event> {
+    // Get the next available ID by finding the maximum existing ID
+    const maxEvent = await this.databaseService.tEvent.findFirst({
+      orderBy: { id: 'desc' },
+      select: { id: true },
+    })
+
+    const nextId = maxEvent ? maxEvent.id + 1 : 1
+
+    return this.databaseService.tEvent.create({
+      data: {
+        ...createEventData,
+        id: nextId,
+      },
+    })
   }
 }
