@@ -14,6 +14,7 @@ describe('EventsController Integration', () => {
   beforeEach(async () => {
     const mockEventsService = {
       getAllEvents: jest.fn(),
+      getEventBySlug: jest.fn(),
     }
 
     module = await Test.createTestingModule({
@@ -118,6 +119,36 @@ describe('EventsController Integration', () => {
 
       expect(result).toEqual(mockResponse)
       expect(getAllEventsSpy).toHaveBeenCalledWith(mockQuery)
+    })
+  })
+
+  describe('getEventBySlug', () => {
+    it('should return a single event from service', async () => {
+      const mockEvent = {
+        id: 1,
+        name: 'Test Event',
+        slug: 'test-event',
+        city: 'Test City',
+        citySlug: 'test-city',
+        location: 'Test Location',
+        date: new Date('2023-12-01T19:00:00.000Z'),
+        organizerName: 'Test Organizer',
+        imageUrl: 'https://example.com/event.jpg',
+        alt: 'Test event image',
+        description: 'Test event description',
+        price: 2500,
+        createdAt: new Date('2023-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2023-01-01T00:00:00.000Z'),
+      }
+
+      const getEventBySlugSpy = jest
+        .spyOn(eventsService, 'getEventBySlug')
+        .mockResolvedValue(mockEvent)
+
+      const result = await controller.getEventBySlug('test-event')
+
+      expect(result).toEqual(mockEvent)
+      expect(getEventBySlugSpy).toHaveBeenCalledWith('test-event')
     })
   })
 })

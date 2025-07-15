@@ -52,6 +52,9 @@ describe('EventsService Integration', () => {
       tEvent: {
         findMany: jest.fn(),
         count: jest.fn(),
+        findFirst: jest.fn(),
+        create: jest.fn(),
+        findUnique: jest.fn(),
       },
     }
 
@@ -147,6 +150,126 @@ describe('EventsService Integration', () => {
           offset: 5,
           hasMore: false,
         },
+      })
+    })
+  })
+
+  describe('createEvent', () => {
+    it('should create a new event with next available ID when events exist', async () => {
+      const createEventData = {
+        name: 'New Integration Event',
+        slug: 'new-integration-event',
+        city: 'New City',
+        citySlug: 'new-city',
+        location: 'New Location',
+        date: new Date('2024-01-01T19:00:00.000Z'),
+        organizerName: 'New Organizer',
+        imageUrl: 'https://example.com/new-event.jpg',
+        alt: 'New event image',
+        description: 'New event description',
+        price: 5000,
+      }
+
+      const mockCreatedEvent = {
+        id: 3,
+        ...createEventData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const findFirstSpy = jest
+        .spyOn(databaseService.tEvent, 'findFirst')
+        .mockResolvedValue({ id: 2 } as TEvent)
+      const createSpy = jest
+        .spyOn(databaseService.tEvent, 'create')
+        .mockResolvedValue(mockCreatedEvent as TEvent)
+
+      const result = await service.createEvent(createEventData)
+
+      expect(findFirstSpy).toHaveBeenCalledWith({
+        orderBy: { id: 'desc' },
+        select: { id: true },
+      })
+      expect(createSpy).toHaveBeenCalledWith({
+        data: {
+          ...createEventData,
+          id: 3,
+        },
+      })
+      expect(result).toEqual(mockCreatedEvent)
+    })
+
+    it('should create first event with ID 1 when no events exist', async () => {
+      const createEventData = {
+        name: 'First Integration Event',
+        slug: 'first-integration-event',
+        city: 'First City',
+        citySlug: 'first-city',
+        location: 'First Location',
+        date: new Date('2024-02-01T19:00:00.000Z'),
+        organizerName: 'First Organizer',
+        imageUrl: 'https://example.com/first-event.jpg',
+        alt: 'First event image',
+        description: 'First event description',
+        price: 1000,
+      }
+
+      const mockCreatedEvent = {
+        id: 1,
+        ...createEventData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const findFirstSpy = jest
+        .spyOn(databaseService.tEvent, 'findFirst')
+        .mockResolvedValue(null)
+      const createSpy = jest
+        .spyOn(databaseService.tEvent, 'create')
+        .mockResolvedValue(mockCreatedEvent as TEvent)
+
+      const result = await service.createEvent(createEventData)
+
+      expect(findFirstSpy).toHaveBeenCalledWith({
+        orderBy: { id: 'desc' },
+        select: { id: true },
+      })
+      expect(createSpy).toHaveBeenCalledWith({
+        data: {
+          ...createEventData,
+          id: 1,
+        },
+      })
+      expect(result).toEqual(mockCreatedEvent)
+    })
+  })
+
+  describe('getEventBySlug', () => {
+    it('should return event when found by slug', async () => {
+      const mockEvent = mockEvents[0]!
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(mockEvent)
+
+      const result = await service.getEventBySlug('test-event-1')
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { slug: 'test-event-1' },
+      })
+      expect(result).toEqual(mockEvent)
+    })
+
+    it('should throw NotFoundException when event not found', async () => {
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(null)
+
+      await expect(service.getEventBySlug('non-existent-slug')).rejects.toThrow(
+        "Event with slug 'non-existent-slug' not found",
+      )
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { slug: 'non-existent-slug' },
       })
     })
   })
