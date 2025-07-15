@@ -2,6 +2,7 @@ import {
   sanitizeHTML,
   sanitizePlainText,
   validateAndSanitizeURL,
+  validateSlug,
 } from '../../../src/utils/sanitization'
 
 describe('sanitizeHTML', () => {
@@ -49,6 +50,24 @@ describe('validateAndSanitizeURL', () => {
   it('should throw error for URLs without HTTP/HTTPS protocol', () => {
     expect(() => validateAndSanitizeURL('ftp://example.com')).toThrow(
       'URL must use HTTP or HTTPS protocol',
+    )
+  })
+
+  it('should throw error for invalid URL format', () => {
+    expect(() => validateAndSanitizeURL('https://[invalid-url')).toThrow(
+      'Invalid URL format',
+    )
+  })
+})
+
+describe('validateSlug', () => {
+  it('should throw error for empty input', () => {
+    expect(() => validateSlug('')).toThrow('Slug is required')
+  })
+
+  it('should throw error for invalid slug format with special characters', () => {
+    expect(() => validateSlug('invalid@slug')).toThrow(
+      'Slug can only contain lowercase letters, numbers, and hyphens',
     )
   })
 })

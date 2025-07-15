@@ -12,8 +12,7 @@ City Routes (/src/routes/cityRoutes.ts):
   4. PUT /admin/events/:id - Admin route (with auth + admin middleware)
   5. DELETE /admin/events/:id - Admin route (with auth + admin middleware)
 
-
-
+  Read the CLAUDE.md file to understand the iteration workflow and the consequences of violating the rules. Give a feedback with your own words.
 
 Think systematically—coding is not trial-and-error problem solving. Programming is engineering, and it follows deterministic principles. Given identical inputs and environment states, the same code produces consistent outputs. Avoid ad-hoc development. Don't implement without predicting outcomes. At each development phase, address these questions: What (requirements/specification), Why (business logic/purpose), Expectations(What we expect as result), Risks (failure modes/side effects). Ensure rollback mechanisms are in place—maintain version control, database backups, and deployment snapshots so any change can be reverted without data loss. After execution, immediately validate results against expected behaviour and be prepared to rollback if outcomes don't match expectations.
 
