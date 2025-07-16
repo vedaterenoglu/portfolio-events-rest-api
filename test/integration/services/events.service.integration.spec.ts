@@ -57,6 +57,7 @@ describe('EventsService Integration', () => {
         create: jest.fn(),
         findUnique: jest.fn(),
         update: jest.fn(),
+        delete: jest.fn(),
       },
     }
 
@@ -324,6 +325,45 @@ describe('EventsService Integration', () => {
       await expect(
         service.updateEvent(eventId, updateEventData),
       ).rejects.toThrow(`Event with ID ${eventId} not found`)
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+    })
+  })
+
+  describe('deleteEvent', () => {
+    it('should delete an event when it exists', async () => {
+      const eventId = 1
+      const existingEvent = mockEvents[0]!
+
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(existingEvent)
+      const deleteSpy = jest
+        .spyOn(databaseService.tEvent, 'delete')
+        .mockResolvedValue(existingEvent)
+
+      await service.deleteEvent(eventId)
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+      expect(deleteSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+    })
+
+    it('should throw NotFoundException when event not found', async () => {
+      const eventId = 999
+
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(null)
+
+      await expect(service.deleteEvent(eventId)).rejects.toThrow(
+        `Event with ID ${eventId} not found`,
+      )
 
       expect(findUniqueSpy).toHaveBeenCalledWith({
         where: { id: eventId },

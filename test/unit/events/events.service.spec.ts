@@ -70,6 +70,7 @@ describe('EventsService', () => {
           ),
         create: jest.fn(),
         update: jest.fn(),
+        delete: jest.fn(),
       },
     }
 
@@ -361,6 +362,50 @@ describe('EventsService', () => {
       await expect(
         service.updateEvent(eventId, updateEventData),
       ).rejects.toThrow(
+        new NotFoundException(`Event with ID ${eventId} not found`),
+      )
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+
+      findUniqueSpy.mockRestore()
+    })
+  })
+
+  describe('deleteEvent', () => {
+    it('should delete an event when it exists', async () => {
+      const eventId = 1
+      const existingEvent = mockEvents[0]!
+
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(existingEvent)
+      const deleteSpy = jest
+        .spyOn(databaseService.tEvent, 'delete')
+        .mockResolvedValue(existingEvent)
+
+      await service.deleteEvent(eventId)
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+      expect(deleteSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+
+      findUniqueSpy.mockRestore()
+      deleteSpy.mockRestore()
+    })
+
+    it('should throw NotFoundException when event not found', async () => {
+      const eventId = 999
+
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(null)
+
+      await expect(service.deleteEvent(eventId)).rejects.toThrow(
         new NotFoundException(`Event with ID ${eventId} not found`),
       )
 

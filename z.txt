@@ -1,20 +1,66 @@
+TEST AND CONFIRM THE FOLLOWING ENDPOINS ARE CREATE FULLY SECURED AND TESTED OR NOT.
+
 City Routes (/src/routes/cityRoutes.ts):
-
-CONFIRM THE FOLLOWING ENDPOINS ARE CREATE FULLY SECURED AND TESTED.
-
   1. GET /cities - Public route (with rate limiting)
   2. POST /admin/cities - Admin route (with auth + admin middleware)
   3. PUT /admin/cities/:id - Admin route (with auth + admin middleware)
 
   Event Routes (/src/routes/eventRoutes.ts):
-
-  TEST AND CONFIRM THE FOLLOWING ENDPOINS ARE CREATE FULLY SECURED AND TESTED OR NOT.
-
   1. GET /events - Public route
   2. GET /events/:slug - Public route (with rate limiting)
   3. POST /admin/events - Admin route (with auth + admin middleware)
   4. PUT /admin/events/:id - Admin route (with auth + admin middleware)
   5. DELETE /admin/events/:id - Admin route (with auth + admin middleware)
+
+
+The Complete Iteration Pattern:
+
+  1. Start Iteration (from CLAUDE.md requirements)
+
+  2. Write ONE test OR ONE file (never both)
+  - Either add one test to existing test file
+  - OR modify one source file
+  - NEVER multiple tests in single iteration
+
+  3. Fix TypeScript errors (if any)
+  - Run npx tsc --noEmit to check
+
+  4. Fix lint errors (if any)
+  - Run npm run lint
+
+  5. Run tests
+  - Execute relevant test command
+
+  6. Report coverage
+  - Show exact coverage metrics
+  - All four metrics: statements, branches, functions, lines
+
+  7. Wait for confirmation
+  - STOP and wait for user to say "proceed" or similar
+
+  8. Unit Tests Phase (if needed)
+  - Create unit tests ONE BY ONE
+  - Each test follows steps 2-7
+  - Improve coverage incrementally
+  - Continue until all files meet requirements (100% or min 80%)
+
+  9. Integration Tests Phase (if needed)
+  - Create integration tests ONE BY ONE
+  - Each test follows steps 2-7
+  - Improve coverage incrementally
+  - Continue until all files meet requirements
+
+  10. Repeat
+  - Go back to step 1 for next iteration
+
+  Key Rules I Must Follow:
+  - NEVER skip waiting for confirmation
+  - NEVER add multiple tests at once
+  - ALWAYS report coverage after running tests
+  - ALWAYS fix TS/lint errors before running tests
+  - NEVER proceed if coverage decreases
+
+  This ensures systematic, predictable development where each change is isolated, tested, and validated before moving forward.
 
 ------------------------------------------------------------------------------------------------------------------
   Read the CLAUDE.md file to understand the iteration workflow and the consequences of violating the rules. Give a feedback with your own words.
@@ -36,25 +82,72 @@ PLEASE FOLLOW ITERATION WORKFLOW AND DON'T VIOLATE THE DIRECTIVES, RULES.
 -----------------------------------------------------------------------------------------------------------------
 CONFIRM YOU UNDERSTOOD FOLLOWING ITERATION DIRECTIVE AND YOU WILL APPLY AT EACH ITERATION. DON'T START TO EXECUTE THE ITERATION BEFORE MY CONFIRMATION.
 
-## ITERATION IMPLEMENTATION DIRECTIVE  
+ITERATION IMPLEMENTATION DIRECTIVE  
 
 You are a test AI AGENT development specialist. Follow these strict requirements:
 Core Rules
 1. MANDATORY: AT THE BEGINNING OF THE EACH ITERATION GIVE INFO AS EXPLAINED IN CLAUDE.md FILE.
+
 2. NEVER use any type - Always use proper TypeScript types
-3. AT EACH ITERATION ADD OR EDIT ONLY ONE FILE OR ONE TEST NOT MORE.
-4. MANDATORY: 100% coverage for ALL THREE metrics
+
+3. MANDATORY: 100% coverage for ALL THREE metrics
     * Statements coverage: 100% (REQUIRED)
     * Branch coverage: 100% (REQUIRED)
     * Functions coverage: 100% (REQUIRED)
     * ABSOLUTE MINIMUM if 100% impossible: 80% for each metric
-5. Always report coverage results after running tests
-6. Complete current file fully before asking about next file
-7. Check errors AFTER code changes: TypeScript → Lint → Run tests
-8. Apply these rules at every step of test creation
-Workflow
 
-Per Iteration Workflow (from CLAUDE.md) → Write ONE test / ONE file  → Fix TS errors → Fix lint → Run test → Report coverage → Wait for confirmation → Repeat
+4. Apply these rules at every step of test creation Workflow:
+Per Iteration Workflow (from CLAUDE.md) → Write ONE test / ONE file → Fix TS errors → Fix lint → Run test → Report coverage → Wait for confirmation → If it is needed create unit tests one by one → improve unit test coverage fullfil the requirements → check full coverage for nit tests and make imrovement until the all files coverage meet requirements, If it is needed create integration tests one by one → improve integration test coverage fullfil the requirements, check full coverage for nit tests and make imrovement until the all files coverage meet requirements → Repeat
+
+The Complete Iteration Pattern:
+
+  1. Start Iteration (from CLAUDE.md requirements)
+
+  2. Write ONE test OR ONE file (never both)
+  - Either add one test to existing test file
+  - OR modify one source file
+  - NEVER multiple tests in single iteration
+
+  3. Fix TypeScript errors (if any)
+  - Run npx tsc --noEmit to check
+
+  4. Fix lint errors (if any)
+  - Run npm run lint
+
+  5. Run tests
+  - Execute relevant test command
+
+  6. Report coverage
+  - Show exact coverage metrics
+  - All four metrics: statements, branches, functions, lines
+
+  7. Wait for confirmation
+  - STOP and wait for user to say "proceed" or similar
+
+  8. Unit Tests Phase (if needed)
+  - Create unit tests ONE BY ONE
+  - Each test follows steps 2-7
+  - Improve coverage incrementally
+  - Continue until all files meet requirements (100% or min 80%)
+
+  9. Integration Tests Phase (if needed)
+  - Create integration tests ONE BY ONE
+  - Each test follows steps 2-7
+  - Improve coverage incrementally
+  - Continue until all files meet requirements
+
+  10. Repeat
+  - Go back to step 1 for next iteration
+
+  Key Rules I Must Follow:
+  - NEVER skip waiting for confirmation
+  - NEVER add multiple tests at once
+  - ALWAYS report coverage after running tests
+  - ALWAYS fix TS/lint errors before running tests
+  - NEVER proceed if coverage decreases
+
+This ensures systematic, predictable development where each change is isolated, tested, and validated before moving forward.
+
 Success Criteria
 * ✅ Zero TypeScript/lint errors
 * ✅ 100% coverage for ALL THREE metrics (statements, branches, functions) OR minimum 80% each if impossible
@@ -67,44 +160,21 @@ Continue with next iteration following these guidelines.
 CHECK GIT LOGS INSPECT FROM THE LATEST COMMIT UP TO NOW CHANGES AND CREATE A MEANINGFUL COMMIT MESSAGE. NOT EXECUTE COMMIT.
 -------------------------------------------------------------------------------------------------------------------
 
-  feat: implement PUT /admin/events/:id endpoint with complete security and comprehensive testing
+  f  feat: implement DELETE /admin/events/:id endpoint and graceful shutdown system
 
-  - Add PUT route handler to AdminEventsController with full security stack
-    - JWT authentication and admin role authorization guards
-    - Zod schema validation with UpdateEventSchema
-    - Integer parameter validation for event ID
-    - Proper HTTP status codes and response handling
+  - Add DELETE endpoint to admin-events.controller.ts with proper authorization
+  - Implement deleteEvent method in events.service.ts with existence validation
+  - Create comprehensive GracefulShutdownService with multi-phase shutdown process
+  - Integrate graceful shutdown with main.ts signal handlers (SIGTERM, SIGINT, exceptions)
+  - Add priority-based cleanup task execution with timeout handling
+  - Enhance application bootstrap with proper logging and error handling
 
-  - Implement updateEvent method in EventsService with proper error handling
-    - Check event existence before update with NotFoundException
-    - Type-safe Prisma ORM integration with Prisma.TEventUpdateInput
-    - Proper database transaction handling
+  Test Coverage Improvements:
+  - Add 61 new unit tests (70 → 131 total)
+  - Add 33 new integration tests (57 → 90 total)
+  - Achieve 100% test coverage for all new functionality
+  - Improve branch coverage in zod-validation.pipe.ts and events.service.ts
+  - Add comprehensive error handling tests for all shutdown scenarios
 
-  - Add comprehensive unit tests for PUT endpoint functionality
-    - AdminEventsController tests for updateEvent method
-    - EventsService tests for successful update and error scenarios
-    - Mock service integration and spy validation
 
-  - Add integration tests for complete PUT endpoint coverage
-    - AdminEventsController integration tests with mock service
-    - EventsService integration tests with database mock
-    - Cover both success and error paths for complete coverage
-
-  - Improve unit test coverage for existing functionality
-    - Add test for cities service search functionality
-    - Add test for Prisma exception handling (ValidationError, UnknownRequestError, RustPanicError)
-    - Add test for output sanitization inherited properties handling
-    - Add test for Prisma logging configuration (development/production)
-    - Add test for cities query schema NaN fallback handling
-    - Add test for sanitization regex validation order
-
-  Integration test coverage improved from 97.96% to 98.98% statements
-  Unit test coverage maintains high levels with expanded test scenarios
-  All tests passing: 128 unit tests, 86 integration tests
-
-  This commit represents a significant feature addition with:
-  - New Feature: Complete PUT endpoint implementation
-  - Security: Full authentication and authorization
-  - Testing: Comprehensive unit and integration test coverage
-  - Code Quality: Proper error handling and type safety
-  - Coverage: Multiple test improvements across the codebase
+ 

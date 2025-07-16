@@ -92,4 +92,42 @@ describe('ZodValidationPipe Integration', () => {
       expect(badRequestError.message).toContain('Invalid input')
     }
   })
+
+  it('should format ZodError with mixed path structures to achieve full branch coverage', () => {
+    // Create a complex schema that can generate multiple errors with different path structures
+    const complexSchema = z
+      .object({
+        nested: z.object({
+          field: z.string().min(1),
+        }),
+        simpleField: z.string().min(1),
+      })
+      .strict()
+
+    const pipe = new ZodValidationPipe(complexSchema)
+
+    // Input that will generate multiple errors with different path structures
+    const invalidInput = {
+      nested: {
+        field: '', // Will create path: ['nested', 'field']
+      },
+      simpleField: '', // Will create path: ['simpleField']
+      extraField: 'not allowed', // Will create path: [] (root-level error for strict mode)
+    }
+
+    expect(() => pipe.transform(invalidInput)).toThrow(BadRequestException)
+
+    try {
+      pipe.transform(invalidInput)
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestException)
+      const badRequestError = error as BadRequestException
+      const message = badRequestError.message
+
+      // Verify different path formats are handled correctly
+      expect(message).toContain('nested.field:') // Non-empty path with multiple elements
+      expect(message).toContain('simpleField:') // Non-empty path with single element
+      expect(message).toContain('root:') // Empty path (root-level error)
+    }
+  })
 })

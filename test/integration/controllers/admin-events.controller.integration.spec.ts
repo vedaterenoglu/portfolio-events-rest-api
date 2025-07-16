@@ -15,6 +15,7 @@ describe('AdminEventsController Integration', () => {
     const mockEventsService = {
       createEvent: jest.fn(),
       updateEvent: jest.fn(),
+      deleteEvent: jest.fn(),
     }
 
     module = await Test.createTestingModule({
@@ -119,6 +120,21 @@ describe('AdminEventsController Integration', () => {
 
       expect(result).toEqual(expectedEvent)
       expect(updateEventSpy).toHaveBeenCalledWith(eventId, updateEventData)
+    })
+  })
+
+  describe('deleteEvent', () => {
+    it('should delete an event by ID', async () => {
+      const eventId = 1
+
+      const deleteEventSpy = jest
+        .spyOn(eventsService, 'deleteEvent')
+        .mockResolvedValue(undefined)
+
+      const result = await controller.deleteEvent(eventId)
+
+      expect(result).toBeUndefined()
+      expect(deleteEventSpy).toHaveBeenCalledWith(eventId)
     })
   })
 })

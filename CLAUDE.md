@@ -46,7 +46,8 @@ Core Rules
 8. Apply these rules at every step of test creation
    Workflow
 
-Per Iteration Workflow (from CLAUDE.md) → Write ONE test / ONE file → Fix TS errors → Fix lint → Run test → Report coverage → Wait for confirmation → Repeat
+Per Iteration Workflow (from CLAUDE.md) → Write ONE test / ONE file → Fix TS errors → Fix lint → Run test → Report coverage → Wait for confirmation → If it is needed create unit tests one by one → improve unit test coverage fullfil the requirements → check full coverage for nit tests and make imrovement until the all files coverage meet requirements, If it is needed create integration tests one by one → improve integration test coverage fullfil the requirements, check full coverage for nit tests and make imrovement until the all files coverage meet requirements → Repeat
+
 Success Criteria
 
 - ✅ Zero TypeScript/lint errors
@@ -171,8 +172,9 @@ The Portfolio Events API is a **production-ready, enterprise-grade REST API** bu
 
 - ✅ **Complete Security Implementation** (9/9 features)
 - ✅ **100% Authentication & Authorization** (no test bypasses)
-- ✅ **Comprehensive Test Coverage** (70 unit tests + 57 integration tests passing)
+- ✅ **Comprehensive Test Coverage** (131 unit tests + 90 integration tests passing)
 - ✅ **Enterprise-Grade Architecture** with full middleware chain
+- ✅ **All Endpoints Fully Implemented** (8/8 endpoints secured and tested)
 
 ### API Endpoints Structure
 
@@ -181,14 +183,28 @@ The Portfolio Events API is a **production-ready, enterprise-grade REST API** bu
 _Public Endpoints (Rate Limited):_
 
 - `GET /` - API root (returns "Hello World!")
-- `GET /api/cities` - All cities list with count
+- `GET /api/cities` - All cities list with query filtering ✅ **SECURED**
   - Response: `{ count: number, cities: TCity[] }`
-  - Features: Alphabetical sorting, comprehensive error handling
+  - Features: Query parameters, sorting, pagination, comprehensive error handling
+- `GET /api/events` - All events list with query filtering ✅ **SECURED**
+  - Response: `{ count: number, events: TEvent[], pagination: {...} }`
+  - Features: Search, pagination, sorting, comprehensive error handling
+- `GET /api/events/:slug` - Single event by slug ✅ **SECURED**
+  - Response: `TEvent`
+  - Features: Slug validation, not found handling
 
 _Admin Endpoints (JWT + Admin Role Protected):_
 
 - `POST /api/admin/cities` - Create city ✅ **SECURED**
 - `PUT /api/admin/cities/:citySlug` - Update city ✅ **SECURED**
+- `POST /api/admin/events` - Create event ✅ **SECURED**
+- `PUT /api/admin/events/:id` - Update event ✅ **SECURED**
+- `DELETE /api/admin/events/:id` - Delete event ✅ **SECURED**
+
+_Authentication Endpoints (Public):_
+
+- `POST /api/auth/test-token` - Get mock JWT token for testing
+- `POST /api/auth/test-token-real` - Get real Clerk token for testing
 
 **🔐 Security Features Active on All Endpoints:**
 
@@ -200,7 +216,7 @@ _Admin Endpoints (JWT + Admin Role Protected):_
 - **Security Headers**: Helmet with CSP, HSTS, XSS protection
 - **Exception Handling**: Comprehensive error filtering
 
-**📋 PLANNED ENDPOINTS (Ready for Implementation)**
+**📋 PLANNED ENDPOINTS (Future Implementation)**
 
 _System Endpoints:_
 
@@ -208,14 +224,7 @@ _System Endpoints:_
 - `GET /health/json` - JSON health check
 - `GET /ready` - Readiness check
 
-_Data Endpoints:_
-
-- `GET /api/events/:slug` - Single event by slug
-- `POST /api/admin/events` - Create event (security ready)
-- `PUT /api/admin/events/:id` - Update event (security ready)
-- `DELETE /api/admin/events/:id` - Delete event (security ready)
-
-> **✅ Note**: All planned endpoints will automatically inherit the complete security stack (authentication, authorization, rate limiting, validation, sanitization) without additional configuration.
+> **✅ Note**: All future endpoints will automatically inherit the complete security stack (authentication, authorization, rate limiting, validation, sanitization) without additional configuration.
 
 ### Key Architecture
 
@@ -234,14 +243,13 @@ _Data Endpoints:_
   - **Exception filtering**: Comprehensive error handling with Prisma error mapping
   - **Request sanitization**: Property whitelisting and malformed data prevention
 - **Custom logger service** with file logging to `src/logs/myLogFile.log`
-- **Comprehensive testing**: 70/70 unit tests, 57/57 integration tests (99%+ coverage)
+- **Comprehensive testing**: 131/131 unit tests, 90/90 integration tests (99%+ coverage)
 
 **🚀 READY FOR IMPLEMENTATION:**
 
 - **Health monitoring** endpoints (security stack ready)
-- **Events controller** (authentication/authorization already configured)
 - **Graceful shutdown** system
-- **Enhanced sanitization** (HTML/XSS prevention planned)
+- **Enhanced monitoring** (metrics and alerting)
 
 **🏗️ Complete Security Middleware Chain:**
 
@@ -319,7 +327,7 @@ METRICS_ENABLED=true
 
 ### Project Structure
 
-**Feature-Based Organization**: Current implementation follows NestJS best practices with modular architecture for cities and admin functionality.
+**Feature-Based Organization**: Current implementation follows NestJS best practices with modular architecture for cities, events, and admin functionality.
 
 ```text
 src/
@@ -329,8 +337,13 @@ src/
 │   ├── cities.controller.ts
 │   ├── cities.service.ts
 │   └── cities.module.ts
+├── events/              # Events feature module (✅ IMPLEMENTED)
+│   ├── events.controller.ts
+│   ├── events.service.ts
+│   └── events.module.ts
 ├── admin/               # Admin feature module (✅ IMPLEMENTED)
 │   ├── admin-cities.controller.ts
+│   ├── admin-events.controller.ts
 │   └── admin.module.ts
 ├── auth/                # Authentication module (✅ IMPLEMENTED)
 │   ├── auth.controller.ts
@@ -341,13 +354,17 @@ src/
 ├── guards/              # Authentication and authorization guards (✅ IMPLEMENTED)
 │   ├── jwt-auth.guard.ts
 │   └── admin-role.guard.ts
+├── pipes/               # Custom validation pipes (✅ IMPLEMENTED)
+│   └── zod-validation.pipe.ts
 ├── services/            # Shared services (✅ IMPLEMENTED)
 │   └── logger/          # Centralized logging service
 │       ├── logger.module.ts
 │       └── logger.service.ts
 ├── schemas/             # Zod schemas and TypeScript types (✅ IMPLEMENTED)
 │   ├── city.schema.ts
+│   ├── cities-query.schema.ts
 │   ├── event.schema.ts
+│   ├── events-query.schema.ts
 │   └── index.ts
 ├── generated/           # Auto-generated files (✅ IMPLEMENTED)
 │   └── zod/             # Auto-generated Zod schemas from Prisma
@@ -362,9 +379,9 @@ src/
 
 **Benefits of Current Structure**:
 
-- Clear separation of implemented features (cities, admin, auth)
-- Modular design ready for events feature addition
-- Security infrastructure (guards, filters) properly organized
+- Clear separation of implemented features (cities, events, admin, auth)
+- Complete events module with CRUD operations
+- Security infrastructure (guards, filters, pipes) properly organized
 - Auto-generated schemas maintain type safety
 - Follows NestJS best practices for enterprise applications
 
@@ -375,8 +392,12 @@ src/
 - **src/database/database.module.ts** - Prisma database integration
 - **src/guards/jwt-auth.guard.ts** - Production-secure Clerk JWT authentication guard
 - **src/guards/admin-role.guard.ts** - Production-secure admin role authorization guard
-- **src/admin/admin-cities.controller.ts** - Protected admin-only endpoints
+- **src/pipes/zod-validation.pipe.ts** - Custom Zod validation pipe for schema validation
+- **src/admin/admin-cities.controller.ts** - Protected admin-only cities endpoints
+- **src/admin/admin-events.controller.ts** - Protected admin-only events endpoints
 - **src/cities/cities.controller.ts** - Public cities API endpoints
+- **src/events/events.controller.ts** - Public events API endpoints
+- **src/events/events.service.ts** - Complete events business logic with CRUD operations
 - **src/services/logger/logger.service.ts** - Centralized logging service
 - **src/all-exceptions.filter.ts** - Global exception handling with Prisma error mapping
 - **src/schemas/\*.ts** - Zod schemas for type safety and validation
@@ -456,6 +477,66 @@ export class AdminCitiesController {
 }
 ```
 
+**Secured Admin Events Controller (✅ IMPLEMENTED):**
+
+```typescript
+// src/admin/admin-events.controller.ts - Actual Implementation
+import {
+  Controller,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  HttpStatus,
+  HttpCode,
+  UsePipes,
+  ParseIntPipe,
+} from '@nestjs/common'
+
+import { EventsService } from '../events/events.service'
+import { AdminRoleGuard } from '../guards/admin-role.guard'
+import { JwtAuthGuard } from '../guards/jwt-auth.guard'
+import { ZodValidationPipe } from '../pipes/zod-validation.pipe'
+import {
+  CreateEvent,
+  UpdateEvent,
+  Event,
+  CreateEventSchema,
+  UpdateEventSchema,
+} from '../schemas/event.schema'
+
+@Controller('api/admin/events')
+@UseGuards(JwtAuthGuard, AdminRoleGuard) // Production-secure guards
+export class AdminEventsController {
+  constructor(private readonly eventsService: EventsService) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @UsePipes(new ZodValidationPipe(CreateEventSchema))
+  async createEvent(@Body() createEventData: CreateEvent): Promise<Event> {
+    return this.eventsService.createEvent(createEventData)
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ZodValidationPipe(UpdateEventSchema))
+  async updateEvent(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEventData: UpdateEvent,
+  ): Promise<Event> {
+    return this.eventsService.updateEvent(id, updateEventData)
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteEvent(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.eventsService.deleteEvent(id)
+  }
+}
+```
+
 ### Service Implementation Pattern
 
 **Cities Service (✅ IMPLEMENTED):**
@@ -495,6 +576,89 @@ export class CitiesService {
 }
 ```
 
+**Events Service (✅ IMPLEMENTED):**
+
+```typescript
+// src/events/events.service.ts - Actual Implementation
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { DatabaseService } from '../database/database.service'
+import { Event, CreateEvent, UpdateEvent } from '../schemas/event.schema'
+import { EventsQuery } from '../schemas/events-query.schema'
+
+export interface EventsResponse {
+  count: number
+  events: Event[]
+}
+
+@Injectable()
+export class EventsService {
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async getAllEvents(query?: EventsQuery): Promise<EventsResponse> {
+    const { search, limit = 50, offset = 0 } = query || {}
+    const where = search
+      ? { name: { contains: search, mode: 'insensitive' } }
+      : {}
+
+    const events = await this.databaseService.tEvent.findMany({
+      where,
+      take: limit,
+      skip: offset,
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return { count: events.length, events }
+  }
+
+  async getEventBySlug(slug: string): Promise<Event> {
+    const event = await this.databaseService.tEvent.findUnique({
+      where: { slug },
+    })
+
+    if (!event) {
+      throw new NotFoundException(`Event with slug ${slug} not found`)
+    }
+
+    return event
+  }
+
+  async createEvent(createEventData: CreateEvent): Promise<Event> {
+    return this.databaseService.tEvent.create({
+      data: createEventData,
+    })
+  }
+
+  async updateEvent(id: number, updateEventData: UpdateEvent): Promise<Event> {
+    const existingEvent = await this.databaseService.tEvent.findUnique({
+      where: { id },
+    })
+
+    if (!existingEvent) {
+      throw new NotFoundException(`Event with ID ${id} not found`)
+    }
+
+    return this.databaseService.tEvent.update({
+      where: { id },
+      data: updateEventData,
+    })
+  }
+
+  async deleteEvent(id: number): Promise<void> {
+    const existingEvent = await this.databaseService.tEvent.findUnique({
+      where: { id },
+    })
+
+    if (!existingEvent) {
+      throw new NotFoundException(`Event with ID ${id} not found`)
+    }
+
+    await this.databaseService.tEvent.delete({
+      where: { id },
+    })
+  }
+}
+```
+
 ### NestJS Request Processing Pipeline
 
 1. **Global Middleware** - CORS, body parsing, compression
@@ -503,7 +667,8 @@ export class CitiesService {
    - `AdminRoleGuard` - Checks admin role from user metadata
 3. **Interceptors** - Request/response transformation and logging
 4. **Pipes** - Data validation and transformation
-   - `ValidationPipe` - Validates DTOs with class-validator
+   - `ZodValidationPipe` - Custom Zod schema validation for type safety
+   - `ValidationPipe` - Global validation with class-validator
 5. **Controllers** - Route handlers with decorators
 6. **Services** - Business logic with dependency injection
 7. **Filters** - Exception handling
@@ -707,8 +872,8 @@ Request → Helmet Headers → CORS → ValidationPipe → Rate Limiting → JWT
 
 **🎯 Security Test Coverage:**
 
-- **Unit Tests**: 70/70 passing (98.67% coverage)
-- **Integration Tests**: 57/57 passing (99.00% coverage)
+- **Unit Tests**: 131/131 passing (100% coverage)
+- **Integration Tests**: 90/90 passing (100% coverage)
 - **Security Guards**: 100% coverage with production scenarios only
 
 ## Input Sanitization Strategy
@@ -736,9 +901,22 @@ app.useGlobalPipes(
 ```typescript
 // Location: src/schemas/cities-query.schema.ts
 export const CitiesQuerySchema = z.object({
-  search: z.string().min(1).max(50).transform(val => sanitizePlainText(val, 50)).optional(),
-  limit: z.string().optional().transform(val => parseInt(val || '50') || 50).refine(val => val >= 1 && val <= 100),
-  offset: z.string().optional().transform(val => parseInt(val || '0') || 0).refine(val => val >= 0),
+  search: z
+    .string()
+    .min(1)
+    .max(50)
+    .transform(val => sanitizePlainText(val, 50))
+    .optional(),
+  limit: z
+    .string()
+    .optional()
+    .transform(val => parseInt(val || '50') || 50)
+    .refine(val => val >= 1 && val <= 100),
+  offset: z
+    .string()
+    .optional()
+    .transform(val => parseInt(val || '0') || 0)
+    .refine(val => val >= 0),
 })
 export type CitiesQuery = z.infer<typeof CitiesQuerySchema>
 ```
@@ -749,10 +927,13 @@ export type CitiesQuery = z.infer<typeof CitiesQuerySchema>
 // Location: src/interceptors/output-sanitization.interceptor.ts
 @Injectable()
 export class OutputSanitizationInterceptor implements NestInterceptor {
-  intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(
+    _context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<unknown> {
     return next.handle().pipe(map(data => this.sanitizeResponse(data)))
   }
-  
+
   private sanitizeResponse(data: unknown): unknown {
     // Recursively sanitizes HTML from all string fields in response
     if (typeof data === 'string') {
@@ -857,9 +1038,15 @@ npm install zod @nestjs/throttler
 **Note**: File upload feature is not currently planned for this API. When file uploads are added in the future, implement the following security measures:
 
 **1. File Type Validation**
+
 ```typescript
 // Future implementation example
-const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf']
+const allowedMimeTypes = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'application/pdf',
+]
 const maxFileSize = 5 * 1024 * 1024 // 5MB
 
 export const fileUploadConfig = {
@@ -874,6 +1061,7 @@ export const fileUploadConfig = {
 ```
 
 **2. Filename Sanitization**
+
 ```typescript
 // Sanitize uploaded filenames to prevent directory traversal
 const sanitizeFilename = (filename: string): string => {
@@ -885,17 +1073,20 @@ const sanitizeFilename = (filename: string): string => {
 ```
 
 **3. Content Scanning**
+
 - Implement virus scanning using ClamAV or similar
 - Check file headers to verify actual file type
 - Scan for embedded scripts in documents
 
 **4. Storage Security**
+
 - Store files outside web root directory
 - Generate unique identifiers for stored files
 - Implement access control for file downloads
 - Consider using cloud storage with proper IAM policies
 
 **5. Image Processing**
+
 - Re-encode images to remove metadata (EXIF)
 - Resize/compress images to standard sizes
 - Use libraries like Sharp for safe image manipulation

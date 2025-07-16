@@ -110,4 +110,19 @@ export class EventsService {
       data: updateEventData as Prisma.TEventUpdateInput,
     })
   }
+
+  async deleteEvent(id: number): Promise<void> {
+    // Check if event exists
+    const existingEvent = await this.databaseService.tEvent.findUnique({
+      where: { id },
+    })
+
+    if (!existingEvent) {
+      throw new NotFoundException(`Event with ID ${id} not found`)
+    }
+
+    await this.databaseService.tEvent.delete({
+      where: { id },
+    })
+  }
 }

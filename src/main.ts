@@ -1,11 +1,13 @@
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationPipe, Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import helmet from 'helmet'
 
 import { AppModule } from './app.module'
+import { GracefulShutdownService } from './services/graceful-shutdown.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  const logger = new Logger('Bootstrap')
 
   // Global validation pipeline
   app.useGlobalPipes(
@@ -50,6 +52,72 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   })
 
+  // Get graceful shutdown service
+  const gracefulShutdownService = app.get(GracefulShutdownService)
+
+  // Register example cleanup tasks
+  gracefulShutdownService.registerCleanupTask({
+    name: 'Active Request Completion',
+    priority: 100,
+    timeout: 30000, // 30 seconds
+    cleanup: async () => {
+      // Wait for active requests to complete
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      logger.log('Active requests completed')
+    },
+  })
+
+  gracefulShutdownService.registerCleanupTask({
+    name: 'Cache Cleanup',
+    priority: 50,
+    timeout: 5000, // 5 seconds
+    cleanup: async () => {
+      // Clear any caches or temporary data
+      await Promise.resolve()
+      logger.log('Cache cleanup completed')
+    },
+  })
+
+  // Enable graceful shutdown
+  app.enableShutdownHooks()
+
+  // Setup signal handlers for graceful shutdown
+  const setupGracefulShutdown = () => {
+    const gracefulShutdown = async (signal: string) => {
+      logger.log(`Received ${signal}, initiating graceful shutdown...`)
+
+      try {
+        await gracefulShutdownService.initiateShutdown(signal)
+        await app.close()
+        logger.log('Application closed successfully')
+        process.exit(0)
+      } catch (error) {
+        logger.error('Error during graceful shutdown:', error)
+        process.exit(1)
+      }
+    }
+
+    // Handle termination signals
+    process.on('SIGTERM', () => void gracefulShutdown('SIGTERM'))
+    process.on('SIGINT', () => void gracefulShutdown('SIGINT'))
+
+    // Handle uncaught exceptions
+    process.on('uncaughtException', error => {
+      logger.error('Uncaught exception:', error)
+      void gracefulShutdown('UNCAUGHT_EXCEPTION')
+    })
+
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (reason, promise) => {
+      logger.error('Unhandled rejection at:', promise, 'reason:', reason)
+      void gracefulShutdown('UNHANDLED_REJECTION')
+    })
+  }
+
+  setupGracefulShutdown()
+
   await app.listen(process.env.PORT ?? 3060)
+  logger.log(`Application is running on port ${process.env.PORT ?? 3060}`)
 }
+
 void bootstrap()

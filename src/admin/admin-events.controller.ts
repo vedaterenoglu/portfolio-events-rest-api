@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Put,
+  Delete,
   Body,
   Param,
   UseGuards,
@@ -43,5 +44,11 @@ export class AdminEventsController {
     @Body() updateEventData: UpdateEvent,
   ): Promise<Event> {
     return this.eventsService.updateEvent(id, updateEventData)
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteEvent(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.eventsService.deleteEvent(id)
   }
 }

@@ -11,6 +11,7 @@ import { CitiesModule } from './cities/cities.module'
 import { DatabaseModule } from './database/database.module'
 import { EventsModule } from './events/events.module'
 import { OutputSanitizationInterceptor } from './interceptors/output-sanitization.interceptor'
+import { GracefulShutdownService } from './services/graceful-shutdown.service'
 import { LoggerModule } from './services/logger/logger.module'
 
 @Module({
@@ -30,6 +31,7 @@ import { LoggerModule } from './services/logger/logger.module'
   controllers: [AppController],
   providers: [
     AppService,
+    GracefulShutdownService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

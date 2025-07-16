@@ -15,10 +15,12 @@ describe('AdminEventsController', () => {
 
   const mockCreateEvent = jest.fn()
   const mockUpdateEvent = jest.fn()
+  const mockDeleteEvent = jest.fn()
 
   const mockEventsService = {
     createEvent: mockCreateEvent,
     updateEvent: mockUpdateEvent,
+    deleteEvent: mockDeleteEvent,
   }
 
   beforeEach(async () => {
@@ -117,6 +119,19 @@ describe('AdminEventsController', () => {
 
       expect(mockUpdateEvent).toHaveBeenCalledWith(eventId, updateEventData)
       expect(result).toEqual(expectedEvent)
+    })
+  })
+
+  describe('deleteEvent', () => {
+    it('should delete an event by ID', async () => {
+      const eventId = 1
+
+      mockDeleteEvent.mockResolvedValue(undefined)
+
+      const result = await controller.deleteEvent(eventId)
+
+      expect(mockDeleteEvent).toHaveBeenCalledWith(eventId)
+      expect(result).toBeUndefined()
     })
   })
 })
