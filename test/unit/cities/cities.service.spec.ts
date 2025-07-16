@@ -111,6 +111,38 @@ describe('CitiesService', () => {
         cities: [],
       })
     })
+
+    it('should return filtered cities when search parameter is provided', async () => {
+      const filteredCities = [mockCities[0]!]
+      mockDatabaseService.tCity.findMany.mockResolvedValue(filteredCities)
+      mockDatabaseService.tCity.count.mockResolvedValue(1)
+
+      const result = await service.getAllCities({ search: 'Test City 1' })
+
+      expect(mockDatabaseService.tCity.findMany).toHaveBeenCalledWith({
+        where: {
+          city: {
+            contains: 'Test City 1',
+            mode: 'insensitive',
+          },
+        },
+        orderBy: { city: 'asc' },
+        take: 50,
+        skip: 0,
+      })
+      expect(mockDatabaseService.tCity.count).toHaveBeenCalledWith({
+        where: {
+          city: {
+            contains: 'Test City 1',
+            mode: 'insensitive',
+          },
+        },
+      })
+      expect(result).toEqual({
+        count: 1,
+        cities: filteredCities,
+      })
+    })
   })
 
   describe('createCity', () => {

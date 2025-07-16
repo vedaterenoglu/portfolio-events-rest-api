@@ -7,6 +7,7 @@ import {
   EventsResponse,
 } from '../../../src/events/events.service'
 import { TEvent } from '../../../src/generated/client'
+import { UpdateEvent } from '../../../src/schemas/event.schema'
 
 describe('EventsService', () => {
   let service: EventsService
@@ -68,6 +69,7 @@ describe('EventsService', () => {
             },
           ),
         create: jest.fn(),
+        update: jest.fn(),
       },
     }
 
@@ -306,6 +308,67 @@ describe('EventsService', () => {
 
       findFirstSpy.mockRestore()
       createSpy.mockRestore()
+    })
+  })
+
+  describe('updateEvent', () => {
+    it('should update and return the updated event', async () => {
+      const eventId = 1
+      const updateEventData: UpdateEvent = {
+        name: 'Updated Event Name',
+        price: 3000,
+      }
+
+      const existingEvent = mockEvents[0]!
+      const updatedEvent = {
+        ...existingEvent,
+        name: 'Updated Event Name',
+        price: 3000,
+      }
+
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(existingEvent)
+      const updateSpy = jest
+        .spyOn(databaseService.tEvent, 'update')
+        .mockResolvedValue(updatedEvent as TEvent)
+
+      const result = await service.updateEvent(eventId, updateEventData)
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+      expect(updateSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+        data: updateEventData,
+      })
+      expect(result).toEqual(updatedEvent)
+
+      findUniqueSpy.mockRestore()
+      updateSpy.mockRestore()
+    })
+
+    it('should throw NotFoundException when event not found', async () => {
+      const eventId = 999
+      const updateEventData: UpdateEvent = {
+        name: 'Updated Event Name',
+      }
+
+      const findUniqueSpy = jest
+        .spyOn(databaseService.tEvent, 'findUnique')
+        .mockResolvedValue(null)
+
+      await expect(
+        service.updateEvent(eventId, updateEventData),
+      ).rejects.toThrow(
+        new NotFoundException(`Event with ID ${eventId} not found`),
+      )
+
+      expect(findUniqueSpy).toHaveBeenCalledWith({
+        where: { id: eventId },
+      })
+
+      findUniqueSpy.mockRestore()
     })
   })
 })

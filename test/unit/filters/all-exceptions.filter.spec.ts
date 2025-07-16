@@ -4,6 +4,11 @@ import { Request, Response } from 'express'
 import { ZodError, z } from 'zod'
 
 import { AllExceptionsFilter } from '../../../src/all-exceptions.filter'
+import {
+  PrismaClientValidationError,
+  PrismaClientUnknownRequestError,
+  PrismaClientRustPanicError,
+} from '../../../src/lib/prisma'
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter
@@ -326,14 +331,73 @@ describe('AllExceptionsFilter', () => {
     expect(errorResponse.error).toBe('Validation error')
   })
 
-  it('should handle exception with no constructor name in debug logging', () => {
-    // Test exception with undefined constructor.name to trigger fallback branches
-    const exceptionWithoutConstructorName = {
-      constructor: {},
-      message: 'test exception without constructor name',
+  it('should handle PrismaClientValidationError through instanceof check', () => {
+    // Create a real PrismaClientValidationError instance to trigger the instanceof check
+    const prismaValidationError = new PrismaClientValidationError(
+      'Invalid data provided for the query',
+      { clientVersion: '5.0.0' },
+    )
+
+    filter.catch(prismaValidationError, mockArgumentsHost)
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST)
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      statusCode: HttpStatus.BAD_REQUEST,
+      timestamp: expect.any(String) as string,
+      path: '/test-endpoint',
+      response: 'Invalid data provided',
+      error: 'Invalid data provided for the query',
+    })
+  })
+
+  it('should handle PrismaClientUnknownRequestError through instanceof check', () => {
+    // Create a real PrismaClientUnknownRequestError instance to trigger the instanceof check
+    const prismaUnknownError = new PrismaClientUnknownRequestError(
+      'Database connection timeout',
+      { clientVersion: '5.0.0' },
+    )
+
+    filter.catch(prismaUnknownError, mockArgumentsHost)
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST)
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      statusCode: HttpStatus.BAD_REQUEST,
+      timestamp: expect.any(String) as string,
+      path: '/test-endpoint',
+      response: 'Database request failed',
+      error: 'Database connection timeout',
+    })
+  })
+
+  it('should handle PrismaClientRustPanicError through instanceof check', () => {
+    // Create a real PrismaClientRustPanicError instance to trigger the instanceof check
+    const prismaRustPanicError = new PrismaClientRustPanicError(
+      'Database engine crashed unexpectedly',
+      '5.0.0',
+    )
+
+    filter.catch(prismaRustPanicError, mockArgumentsHost)
+
+    expect(mockResponse.status).toHaveBeenCalledWith(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    )
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      timestamp: expect.any(String) as string,
+      path: '/test-endpoint',
+      response: 'Database engine error',
+      error: 'Database engine crashed unexpectedly',
+    })
+  })
+
+  it('should handle exception with no constructor to trigger Unknown fallback', () => {
+    // Test exception with no constructor to trigger exception?.constructor?.name || 'Unknown' fallback
+    const exceptionWithoutConstructor = {
+      constructor: undefined,
+      message: 'test exception without constructor',
     }
 
-    filter.catch(exceptionWithoutConstructorName, mockArgumentsHost)
+    filter.catch(exceptionWithoutConstructor, mockArgumentsHost)
 
     expect(mockResponse.status).toHaveBeenCalledWith(
       HttpStatus.INTERNAL_SERVER_ERROR,

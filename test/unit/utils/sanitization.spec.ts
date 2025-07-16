@@ -70,4 +70,12 @@ describe('validateSlug', () => {
       'Slug can only contain lowercase letters, numbers, and hyphens',
     )
   })
+
+  it('should demonstrate that empty string after sanitization fails regex before empty check', () => {
+    // This test shows that inputs resulting in empty strings after sanitization
+    // will fail the regex check before reaching the empty string check
+    expect(() => validateSlug('<script></script>@#$%')).toThrow(
+      'Slug can only contain lowercase letters, numbers, and hyphens',
+    )
+  })
 })

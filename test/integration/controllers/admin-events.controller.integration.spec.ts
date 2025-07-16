@@ -4,6 +4,7 @@ import { AdminEventsController } from '../../../src/admin/admin-events.controlle
 import { EventsService } from '../../../src/events/events.service'
 import { AdminRoleGuard } from '../../../src/guards/admin-role.guard'
 import { JwtAuthGuard } from '../../../src/guards/jwt-auth.guard'
+import { UpdateEvent } from '../../../src/schemas/event.schema'
 
 describe('AdminEventsController Integration', () => {
   let controller: AdminEventsController
@@ -13,6 +14,7 @@ describe('AdminEventsController Integration', () => {
   beforeEach(async () => {
     const mockEventsService = {
       createEvent: jest.fn(),
+      updateEvent: jest.fn(),
     }
 
     module = await Test.createTestingModule({
@@ -81,6 +83,42 @@ describe('AdminEventsController Integration', () => {
 
       expect(result).toEqual(expectedEvent)
       expect(createEventSpy).toHaveBeenCalledWith(createEventData)
+    })
+  })
+
+  describe('updateEvent', () => {
+    it('should update and return the updated event', async () => {
+      const eventId = 1
+      const updateEventData: UpdateEvent = {
+        name: 'Updated Integration Event',
+        price: 3500,
+      }
+
+      const expectedEvent = {
+        id: 1,
+        name: 'Updated Integration Event',
+        slug: 'test-integration-event',
+        city: 'Test City',
+        citySlug: 'test-city',
+        location: 'Test Location',
+        date: new Date('2024-01-01T19:00:00.000Z'),
+        organizerName: 'Test Organizer',
+        imageUrl: 'https://example.com/test-event.jpg',
+        alt: 'Test event image',
+        description: 'Test event description',
+        price: 3500,
+        createdAt: new Date('2023-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2023-01-01T00:00:00.000Z'),
+      }
+
+      const updateEventSpy = jest
+        .spyOn(eventsService, 'updateEvent')
+        .mockResolvedValue(expectedEvent)
+
+      const result = await controller.updateEvent(eventId, updateEventData)
+
+      expect(result).toEqual(expectedEvent)
+      expect(updateEventSpy).toHaveBeenCalledWith(eventId, updateEventData)
     })
   })
 })

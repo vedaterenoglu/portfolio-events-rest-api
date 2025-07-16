@@ -49,6 +49,17 @@ describe('CitiesQuerySchema', () => {
         )
       }
     })
+
+    it('should use default limit when non-numeric string is provided', () => {
+      const result = CitiesQuerySchema.safeParse({
+        limit: 'not-a-number',
+      })
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data.limit).toBe(50)
+      }
+    })
   })
 
   describe('offset parameter', () => {

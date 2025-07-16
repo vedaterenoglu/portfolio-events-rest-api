@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 
 import { DatabaseService } from '../database/database.service'
-import { Event, CreateEvent } from '../schemas/event.schema'
+import { Event, CreateEvent, UpdateEvent } from '../schemas/event.schema'
 import { EventsQuery } from '../schemas/events-query.schema'
+
+import type { Prisma } from '../generated/client'
 
 export interface EventsResponse {
   count: number
@@ -90,6 +92,22 @@ export class EventsService {
         ...createEventData,
         id: nextId,
       },
+    })
+  }
+
+  async updateEvent(id: number, updateEventData: UpdateEvent): Promise<Event> {
+    // Check if event exists
+    const existingEvent = await this.databaseService.tEvent.findUnique({
+      where: { id },
+    })
+
+    if (!existingEvent) {
+      throw new NotFoundException(`Event with ID ${id} not found`)
+    }
+
+    return this.databaseService.tEvent.update({
+      where: { id },
+      data: updateEventData as Prisma.TEventUpdateInput,
     })
   }
 }

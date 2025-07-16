@@ -216,4 +216,27 @@ describe('OutputSanitizationInterceptor', () => {
         done()
       })
   })
+
+  it('should skip inherited properties when sanitizing objects', done => {
+    // Create an object with inherited properties to test the hasOwnProperty check
+    const prototype = {
+      inheritedProperty: '<script>alert("inherited")</script>',
+    }
+    const mockResponse = Object.create(prototype) as Record<string, unknown>
+    mockResponse.ownProperty = '<b>Own property</b>'
+
+    mockCallHandler.handle = jest.fn().mockReturnValue(of(mockResponse))
+
+    interceptor
+      .intercept(mockExecutionContext, mockCallHandler)
+      .subscribe(result => {
+        // Should only include own properties, not inherited ones
+        expect(result).toEqual({
+          ownProperty: 'Own property',
+        })
+        // Should not include inherited properties
+        expect(result).not.toHaveProperty('inheritedProperty')
+        done()
+      })
+  })
 })

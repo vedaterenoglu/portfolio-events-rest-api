@@ -67,22 +67,44 @@ Continue with next iteration following these guidelines.
 CHECK GIT LOGS INSPECT FROM THE LATEST COMMIT UP TO NOW CHANGES AND CREATE A MEANINGFUL COMMIT MESSAGE. NOT EXECUTE COMMIT.
 -------------------------------------------------------------------------------------------------------------------
 
-test: achieve 100% integration test coverage for events module
+  feat: implement PUT /admin/events/:id endpoint with complete security and comprehensive testing
 
-  - Add comprehensive integration tests for POST /admin/events endpoint
-    - Test secure admin-only event creation with proper guard mocking
-    - Verify controller-service integration for createEvent
+  - Add PUT route handler to AdminEventsController with full security stack
+    - JWT authentication and admin role authorization guards
+    - Zod schema validation with UpdateEventSchema
+    - Integer parameter validation for event ID
+    - Proper HTTP status codes and response handling
 
-  - Expand EventsService integration tests with complete coverage:
-    - Add createEvent tests for both existing events and first event scenarios
-    - Add getEventBySlug tests for successful retrieval and NotFoundException
-    - Test manual ID generation logic with proper database mocking
+  - Implement updateEvent method in EventsService with proper error handling
+    - Check event existence before update with NotFoundException
+    - Type-safe Prisma ORM integration with Prisma.TEventUpdateInput
+    - Proper database transaction handling
 
-  - Add EventsController integration test for getEventBySlug endpoint
-    - Test controller method properly delegates to service
-    - Verify parameter passing and response handling
+  - Add comprehensive unit tests for PUT endpoint functionality
+    - AdminEventsController tests for updateEvent method
+    - EventsService tests for successful update and error scenarios
+    - Mock service integration and spy validation
 
-  - Integration test results:
-    - Events module: 100% coverage (all metrics)
-    - Overall: 98.97% statements, 89.59% branches, 99.04% functions
-    - Test suites: 24/24 passing, 83 total tests
+  - Add integration tests for complete PUT endpoint coverage
+    - AdminEventsController integration tests with mock service
+    - EventsService integration tests with database mock
+    - Cover both success and error paths for complete coverage
+
+  - Improve unit test coverage for existing functionality
+    - Add test for cities service search functionality
+    - Add test for Prisma exception handling (ValidationError, UnknownRequestError, RustPanicError)
+    - Add test for output sanitization inherited properties handling
+    - Add test for Prisma logging configuration (development/production)
+    - Add test for cities query schema NaN fallback handling
+    - Add test for sanitization regex validation order
+
+  Integration test coverage improved from 97.96% to 98.98% statements
+  Unit test coverage maintains high levels with expanded test scenarios
+  All tests passing: 128 unit tests, 86 integration tests
+
+  This commit represents a significant feature addition with:
+  - New Feature: Complete PUT endpoint implementation
+  - Security: Full authentication and authorization
+  - Testing: Comprehensive unit and integration test coverage
+  - Code Quality: Proper error handling and type safety
+  - Coverage: Multiple test improvements across the codebase

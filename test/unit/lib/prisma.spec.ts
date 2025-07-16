@@ -1,4 +1,8 @@
-import { disconnectPrisma, getPrismaClient } from '../../../src/lib/prisma'
+import {
+  disconnectPrisma,
+  getPrismaClient,
+  getLoggingConfig,
+} from '../../../src/lib/prisma'
 
 describe('Prisma lib', () => {
   describe('disconnectPrisma', () => {
@@ -19,6 +23,32 @@ describe('Prisma lib', () => {
       const client1 = getPrismaClient()
       const client2 = getPrismaClient()
       expect(client1).toBe(client2)
+    })
+  })
+
+  describe('getLoggingConfig', () => {
+    it('should return development logging config when NODE_ENV is development', () => {
+      const originalNodeEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'development'
+
+      const config = getLoggingConfig()
+
+      expect(config).toEqual(['query', 'error', 'warn'])
+
+      // Restore original NODE_ENV
+      process.env.NODE_ENV = originalNodeEnv
+    })
+
+    it('should return production logging config when NODE_ENV is not development', () => {
+      const originalNodeEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'production'
+
+      const config = getLoggingConfig()
+
+      expect(config).toEqual(['error'])
+
+      // Restore original NODE_ENV
+      process.env.NODE_ENV = originalNodeEnv
     })
   })
 })
