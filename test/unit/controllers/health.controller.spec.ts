@@ -403,6 +403,51 @@ describe('HealthController', () => {
         expect.stringContaining('Portfolio Events API'),
       )
     })
+
+    it('should handle error with undefined environment variables', async () => {
+      // Arrange
+      const originalNodeEnv = process.env.NODE_ENV
+      const originalPackageVersion = process.env.npm_package_version
+
+      delete process.env.NODE_ENV
+      delete process.env.npm_package_version
+
+      mockRequest = {
+        headers: { accept: 'application/json' },
+        query: {},
+      }
+      mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+        send: jest.fn(),
+      }
+
+      const error = new Error('Service unavailable')
+      const getHealthCheckSpy = jest
+        .spyOn(healthMonitoringService, 'getHealthCheck')
+        .mockRejectedValue(error)
+
+      // Act
+      await controller.getHealthCheck(
+        mockRequest as Request,
+        mockResponse as Response,
+      )
+
+      // Assert
+      expect(getHealthCheckSpy).toHaveBeenCalledTimes(1)
+      expect(mockResponse.status).toHaveBeenCalledWith(503)
+      expect(mockResponse.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          environment: 'unknown',
+          version: '1.0.0',
+        }),
+      )
+
+      // Restore environment variables
+      if (originalNodeEnv) process.env.NODE_ENV = originalNodeEnv
+      if (originalPackageVersion)
+        process.env.npm_package_version = originalPackageVersion
+    })
   })
 
   describe('getHealthCheckJson', () => {

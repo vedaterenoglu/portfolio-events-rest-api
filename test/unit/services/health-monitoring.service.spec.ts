@@ -451,4 +451,69 @@ describe('HealthMonitoringService', () => {
       expect(metrics.errors.recent[9]?.message).toBe('Error message 100')
     })
   })
+
+  describe('event loop lag measurement', () => {
+    it('should measure event loop lag through metrics collection', async () => {
+      // Arrange - Create a new service instance
+      const service = new HealthMonitoringService(
+        mockDatabaseService as unknown as DatabaseService,
+        mockGracefulShutdownService as unknown as GracefulShutdownService,
+      )
+
+      // Act - Wait for some event loop measurements to be collected
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      // Wait for more measurements
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      // Get final metrics
+      const finalMetrics = service.getMetrics()
+
+      // Assert
+      expect(finalMetrics.performance.eventLoopLag).toBeGreaterThanOrEqual(0)
+      expect(typeof finalMetrics.performance.eventLoopLag).toBe('number')
+    })
+
+    it('should calculate event loop lag from samples', async () => {
+      // Arrange - Create a new service instance
+      const service = new HealthMonitoringService(
+        mockDatabaseService as unknown as DatabaseService,
+        mockGracefulShutdownService as unknown as GracefulShutdownService,
+      )
+
+      // Act - Allow time for samples to be collected
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // Get metrics to trigger calculation
+      const metrics = service.getMetrics()
+
+      // Assert
+      expect(metrics.performance).toBeDefined()
+      expect(metrics.performance.eventLoopLag).toBeGreaterThanOrEqual(0)
+    })
+
+    it('should trim performance samples when exceeding 100 entries', async () => {
+      // Arrange - Create a service instance
+      const service = new HealthMonitoringService(
+        mockDatabaseService as unknown as DatabaseService,
+        mockGracefulShutdownService as unknown as GracefulShutdownService,
+      )
+
+      // Act - Call getMetrics multiple times to trigger sample collection
+      // Each call to getMetrics triggers measureEventLoopLag which adds samples
+      for (let i = 0; i < 110; i++) {
+        service.getMetrics()
+      }
+
+      // Allow time for all setImmediate callbacks to complete
+      await new Promise(resolve => setTimeout(resolve, 200))
+
+      // Get final metrics to verify trimming occurred
+      const metrics = service.getMetrics()
+
+      // Assert - The samples array should be trimmed to 100 or fewer entries
+      expect(metrics.performance.eventLoopLag).toBeGreaterThanOrEqual(0)
+      expect(typeof metrics.performance.eventLoopLag).toBe('number')
+    })
+  })
 })

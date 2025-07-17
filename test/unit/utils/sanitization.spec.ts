@@ -78,4 +78,15 @@ describe('validateSlug', () => {
       'Slug can only contain lowercase letters, numbers, and hyphens',
     )
   })
+
+  it('should demonstrate that empty string after truncation fails regex check', () => {
+    // This test demonstrates that line 101 is unreachable because
+    // the regex /^[a-z0-9-]+$/ requires at least one character
+    // Any empty string will fail the regex check before reaching the length check
+
+    // Input ' a' with maxLength 1 becomes ' ' then trims to '' which fails regex
+    expect(() => validateSlug(' a', 1)).toThrow(
+      'Slug can only contain lowercase letters, numbers, and hyphens',
+    )
+  })
 })

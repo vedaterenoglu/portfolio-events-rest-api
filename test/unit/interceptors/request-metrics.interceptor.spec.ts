@@ -166,5 +166,35 @@ describe('RequestMetricsInterceptor', () => {
         },
       })
     })
+
+    it('should handle error without constructor name', done => {
+      // Arrange - Create error object without constructor.name
+      const error = Object.create(null) as { message: string }
+      error.message = 'Test error message'
+      mockCallHandler.handle = jest
+        .fn()
+        .mockReturnValue(throwError(() => error))
+
+      // Act
+      const result = interceptor.intercept(
+        mockExecutionContext,
+        mockCallHandler,
+      )
+
+      // Assert
+      result.subscribe({
+        error: err => {
+          expect(err).toBe(error)
+          expect(
+            mockHealthMonitoringService.recordRequest,
+          ).toHaveBeenCalledWith(expect.any(Number), false)
+          expect(mockHealthMonitoringService.recordError).toHaveBeenCalledWith(
+            'UnknownError',
+            'Test error message',
+          )
+          done()
+        },
+      })
+    })
   })
 })

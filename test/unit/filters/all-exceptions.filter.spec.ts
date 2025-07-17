@@ -8,6 +8,7 @@ import {
   PrismaClientValidationError,
   PrismaClientUnknownRequestError,
   PrismaClientRustPanicError,
+  PrismaClientInitializationError,
 } from '../../../src/lib/prisma'
 import { HealthMonitoringService } from '../../../src/services/health-monitoring.service'
 
@@ -480,6 +481,27 @@ describe('AllExceptionsFilter', () => {
       path: '/test-endpoint',
       response: 'An unknown database error occurred',
       error: 'UNKNOWN',
+    })
+  })
+
+  it('should handle PrismaClientInitializationError through instanceof check', () => {
+    // Create a real PrismaClientInitializationError instance to trigger the instanceof check
+    const prismaInitializationError = new PrismaClientInitializationError(
+      'Database initialization failed',
+      '5.0.0',
+    )
+
+    filter.catch(prismaInitializationError, mockArgumentsHost)
+
+    expect(mockResponse.status).toHaveBeenCalledWith(
+      HttpStatus.SERVICE_UNAVAILABLE,
+    )
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+      timestamp: expect.any(String) as string,
+      path: '/test-endpoint',
+      response: 'Database connection failed',
+      error: 'Database initialization failed',
     })
   })
 })
