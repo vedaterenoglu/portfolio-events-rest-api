@@ -123,9 +123,7 @@ class MetricsCollector {
 
   // Record request metrics
   recordRequest(responseTime: number, success: boolean): void {
-    console.log(
-      `[MetricsCollector] Recording request: ${responseTime}ms, success: ${success}`,
-    )
+    // Debug logging removed for production
     this.metrics.requests.total++
     this.metrics.requests.responseTimes.push(responseTime)
 
@@ -144,7 +142,7 @@ class MetricsCollector {
 
   // Record error metrics
   recordError(type: string, message: string): void {
-    console.log(`[MetricsCollector] Recording error: ${type} - ${message}`)
+    // Debug logging removed for production
     this.metrics.errors.total++
     // eslint-disable-next-line security/detect-object-injection
     this.metrics.errors.byType[type] =
@@ -537,17 +535,13 @@ export class HealthMonitoringService {
 
   // Record request for metrics
   recordRequest(responseTime: number, success: boolean): void {
-    console.log(
-      `[HealthMonitoringService] Recording request: ${responseTime}ms, success: ${success}`,
-    )
+    // Debug logging removed for production
     this.metricsCollector.recordRequest(responseTime, success)
   }
 
   // Record error for metrics
   recordError(type: string, message: string): void {
-    console.log(
-      `[HealthMonitoringService] Recording error: ${type} - ${message}`,
-    )
+    // Debug logging removed for production
     this.metricsCollector.recordError(type, message)
   }
 

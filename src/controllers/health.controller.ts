@@ -693,6 +693,22 @@ export class HealthController {
           </div>
         </div>
         
+        <div class="metrics-grid">
+          <div class="metric-card" style="grid-column: 1 / -1;">
+            <h3>📊 Historical Performance Charts</h3>
+            <div class="charts-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 20px;">
+              <div class="chart-wrapper">
+                <h4 style="margin-bottom: 15px; color: #374151; font-size: 1.1rem;">Response Time Trends</h4>
+                <canvas id="responseTimeChart" width="400" height="200"></canvas>
+              </div>
+              <div class="chart-wrapper">
+                <h4 style="margin-bottom: 15px; color: #374151; font-size: 1.1rem;">Request Success Rate</h4>
+                <canvas id="successRateChart" width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="footer">
           <p>Last updated: ${new Date().toLocaleString()}</p>
           <div class="button-group">
@@ -705,6 +721,7 @@ export class HealthController {
         </div>
       </div>
       
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script src="/health-dashboard.js"></script>
     </body>
     </html>

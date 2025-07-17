@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common'
+import { Request } from 'express'
 import { Observable } from 'rxjs'
 import { throwError } from 'rxjs'
 import { tap, catchError } from 'rxjs/operators'
@@ -16,9 +17,12 @@ export class RequestMetricsInterceptor implements NestInterceptor {
     private readonly healthMonitoringService: HealthMonitoringService,
   ) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept<T = unknown>(
+    context: ExecutionContext,
+    next: CallHandler<T>,
+  ): Observable<T> {
     const startTime = Date.now()
-    const request = context.switchToHttp().getRequest()
+    const request = context.switchToHttp().getRequest<Request>()
 
     // Skip health check endpoints to avoid recursive calls
     if (
@@ -35,13 +39,13 @@ export class RequestMetricsInterceptor implements NestInterceptor {
         const responseTime = Date.now() - startTime
         this.healthMonitoringService.recordRequest(responseTime, true)
       }),
-      catchError(error => {
+      catchError((error: Error) => {
         // Record failed request
         const responseTime = Date.now() - startTime
         this.healthMonitoringService.recordRequest(responseTime, false)
 
         // Also record the error
-        const errorType = error.constructor.name || 'UnknownError'
+        const errorType = error.constructor?.name || 'UnknownError'
         const errorMessage = error.message || 'Unknown error occurred'
         this.healthMonitoringService.recordError(errorType, errorMessage)
 

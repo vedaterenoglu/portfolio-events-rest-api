@@ -13,6 +13,7 @@ import { EventsModule } from './events/events.module'
 import { HealthModule } from './health/health.module'
 import { OutputSanitizationInterceptor } from './interceptors/output-sanitization.interceptor'
 import { RequestMetricsInterceptor } from './interceptors/request-metrics.interceptor'
+import { RequestTimeoutInterceptor } from './interceptors/request-timeout.interceptor'
 import { GracefulShutdownService } from './services/graceful-shutdown.service'
 import { HealthMonitoringService } from './services/health-monitoring.service'
 import { LoggerModule } from './services/logger/logger.module'
@@ -52,6 +53,10 @@ import { LoggerModule } from './services/logger/logger.module'
     {
       provide: APP_INTERCEPTOR,
       useClass: RequestMetricsInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestTimeoutInterceptor,
     },
   ],
 })

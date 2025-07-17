@@ -16,12 +16,12 @@ describe('AllExceptionsFilter', () => {
   let mockResponse: Partial<Response>
   let mockRequest: Partial<Request>
   let mockArgumentsHost: ArgumentsHost
-  let mockHealthMonitoringService: jest.Mocked<HealthMonitoringService>
+  let mockHealthMonitoringService: HealthMonitoringService
 
   beforeEach(() => {
     mockHealthMonitoringService = {
       recordError: jest.fn(),
-    } as any
+    } as unknown as HealthMonitoringService
 
     filter = new AllExceptionsFilter(mockHealthMonitoringService)
 

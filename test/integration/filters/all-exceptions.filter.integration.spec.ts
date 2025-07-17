@@ -159,7 +159,7 @@ describe('AllExceptionsFilter (Integration)', () => {
 
     const mockHealthMonitoringService = {
       recordError: jest.fn(),
-    } as any
+    } as unknown as HealthMonitoringService
 
     app.useGlobalFilters(new AllExceptionsFilter(mockHealthMonitoringService))
     await app.init()

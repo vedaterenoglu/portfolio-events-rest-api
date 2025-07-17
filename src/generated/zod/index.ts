@@ -1,23 +1,49 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /////////////////////////////////////////
 // HELPER FUNCTIONS
 /////////////////////////////////////////
 
-
 /////////////////////////////////////////
 // ENUMS
 /////////////////////////////////////////
 
-export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
+export const TransactionIsolationLevelSchema = z.enum([
+  'ReadUncommitted',
+  'ReadCommitted',
+  'RepeatableRead',
+  'Serializable',
+])
 
-export const TCityScalarFieldEnumSchema = z.enum(['citySlug','city','url','alt','createdAt','updatedAt']);
+export const TCityScalarFieldEnumSchema = z.enum([
+  'citySlug',
+  'city',
+  'url',
+  'alt',
+  'createdAt',
+  'updatedAt',
+])
 
-export const TEventScalarFieldEnumSchema = z.enum(['id','name','slug','city','citySlug','location','date','organizerName','imageUrl','alt','description','price','createdAt','updatedAt']);
+export const TEventScalarFieldEnumSchema = z.enum([
+  'id',
+  'name',
+  'slug',
+  'city',
+  'citySlug',
+  'location',
+  'date',
+  'organizerName',
+  'imageUrl',
+  'alt',
+  'description',
+  'price',
+  'createdAt',
+  'updatedAt',
+])
 
-export const SortOrderSchema = z.enum(['asc','desc']);
+export const SortOrderSchema = z.enum(['asc', 'desc'])
 
-export const QueryModeSchema = z.enum(['default','insensitive']);
+export const QueryModeSchema = z.enum(['default', 'insensitive'])
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////

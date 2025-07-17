@@ -5,6 +5,13 @@
   let isRefreshing = true;
   let refreshTimer = null;
   let isPaused = false;
+  let responseTimeChart = null;
+  let successRateChart = null;
+  let historicalData = {
+    responseTimes: [],
+    successRates: [],
+    timestamps: []
+  };
 
   // Fetch health data via AJAX
   async function fetchHealthData() {
@@ -53,6 +60,9 @@
 
     // Update recent errors
     updateRecentErrors(data.metrics?.errors);
+
+    // Update historical charts
+    updateHistoricalCharts(data.metrics);
 
     // Update last updated time
     updateTimestamp();
@@ -255,6 +265,130 @@
       `).join('');
     } else {
       errorContainer.innerHTML = '<div class="metric-row"><div style="text-align: center; color: #10b981; font-weight: 600; padding: 20px;">✅ No recent errors - System running smoothly!</div></div>';
+    }
+  }
+
+  function initializeCharts() {
+    // Initialize Response Time Chart
+    const responseTimeCtx = document.getElementById('responseTimeChart');
+    if (responseTimeCtx) {
+      responseTimeChart = new Chart(responseTimeCtx, {
+        type: 'line',
+        data: {
+          labels: historicalData.timestamps,
+          datasets: [{
+            label: 'Response Time (ms)',
+            data: historicalData.responseTimes,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Response Time (ms)'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Time'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+    // Initialize Success Rate Chart
+    const successRateCtx = document.getElementById('successRateChart');
+    if (successRateCtx) {
+      successRateChart = new Chart(successRateCtx, {
+        type: 'line',
+        data: {
+          labels: historicalData.timestamps,
+          datasets: [{
+            label: 'Success Rate (%)',
+            data: historicalData.successRates,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              title: {
+                display: true,
+                text: 'Success Rate (%)'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Time'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function updateHistoricalCharts(metrics) {
+    if (!metrics) return;
+
+    // Add new data point
+    const now = new Date().toLocaleTimeString();
+    const avgResponseTime = metrics.requests?.averageResponseTime || 0;
+    const successRate = metrics.requests?.total > 0 
+      ? (metrics.requests.success / metrics.requests.total) * 100 
+      : 100;
+
+    historicalData.timestamps.push(now);
+    historicalData.responseTimes.push(avgResponseTime);
+    historicalData.successRates.push(successRate);
+
+    // Keep only last 20 data points
+    if (historicalData.timestamps.length > 20) {
+      historicalData.timestamps.shift();
+      historicalData.responseTimes.shift();
+      historicalData.successRates.shift();
+    }
+
+    // Update charts
+    if (responseTimeChart) {
+      responseTimeChart.data.labels = historicalData.timestamps;
+      responseTimeChart.data.datasets[0].data = historicalData.responseTimes;
+      responseTimeChart.update('none');
+    }
+
+    if (successRateChart) {
+      successRateChart.data.labels = historicalData.timestamps;
+      successRateChart.data.datasets[0].data = historicalData.successRates;
+      successRateChart.update('none');
     }
   }
 
@@ -554,6 +688,9 @@
         changeInterval(this.dataset.interval);
       });
     });
+
+    // Initialize charts
+    initializeCharts();
 
     // Start the refresh cycle
     startRefresh();
