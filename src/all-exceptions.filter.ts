@@ -4,6 +4,7 @@ import {
   HttpStatus,
   HttpException,
   Logger,
+  Injectable,
 } from '@nestjs/common'
 import { BaseExceptionFilter } from '@nestjs/core'
 import { Request, Response } from 'express'
@@ -15,6 +16,7 @@ import {
   PrismaClientRustPanicError,
   PrismaClientInitializationError,
 } from './lib/prisma'
+import { HealthMonitoringService } from './services/health-monitoring.service'
 
 interface ErrorResponse {
   statusCode: number
@@ -31,8 +33,15 @@ interface PrismaKnownRequestError {
 }
 
 @Catch()
+@Injectable()
 export class AllExceptionsFilter extends BaseExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name)
+
+  constructor(
+    private readonly healthMonitoringService: HealthMonitoringService,
+  ) {
+    super()
+  }
 
   override catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp()
@@ -53,6 +62,16 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         ? exception.message.substring(0, 100)
         : 'Unknown'
     this.logger.log(`Exception caught: ${exceptionName} - ${exceptionMessage}`)
+
+    // Record error in health monitoring system
+    // Skip health check endpoints to avoid recursive calls
+    if (
+      !request.url?.includes('/health') &&
+      !request.url?.includes('/ready') &&
+      !request.url?.includes('/metrics')
+    ) {
+      this.healthMonitoringService.recordError(exceptionName, exceptionMessage)
+    }
 
     // Additional debug for Prisma errors
     if (exception?.constructor?.name === 'PrismaClientKnownRequestError') {

@@ -1,13 +1,21 @@
+import { join } from 'path'
+
 import { ValidationPipe, Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
 import helmet from 'helmet'
 
 import { AppModule } from './app.module'
 import { GracefulShutdownService } from './services/graceful-shutdown.service'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
   const logger = new Logger('Bootstrap')
+
+  // Serve static files from public directory
+  app.useStaticAssets(join(__dirname, 'public'), {
+    prefix: '/',
+  })
 
   // Global validation pipeline
   app.useGlobalPipes(
@@ -72,7 +80,6 @@ async function bootstrap() {
     priority: 50,
     timeout: 5000, // 5 seconds
     cleanup: async () => {
-      // Clear any caches or temporary data
       await Promise.resolve()
       logger.log('Cache cleanup completed')
     },

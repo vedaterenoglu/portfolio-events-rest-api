@@ -9,15 +9,21 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientRustPanicError,
 } from '../../../src/lib/prisma'
+import { HealthMonitoringService } from '../../../src/services/health-monitoring.service'
 
 describe('AllExceptionsFilter', () => {
   let filter: AllExceptionsFilter
   let mockResponse: Partial<Response>
   let mockRequest: Partial<Request>
   let mockArgumentsHost: ArgumentsHost
+  let mockHealthMonitoringService: jest.Mocked<HealthMonitoringService>
 
   beforeEach(() => {
-    filter = new AllExceptionsFilter()
+    mockHealthMonitoringService = {
+      recordError: jest.fn(),
+    } as any
+
+    filter = new AllExceptionsFilter(mockHealthMonitoringService)
 
     mockResponse = {
       status: jest.fn().mockReturnThis(),

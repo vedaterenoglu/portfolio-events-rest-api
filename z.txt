@@ -12,56 +12,6 @@ City Routes (/src/routes/cityRoutes.ts):
   4. PUT /admin/events/:id - Admin route (with auth + admin middleware)
   5. DELETE /admin/events/:id - Admin route (with auth + admin middleware)
 
-
-The Complete Iteration Pattern:
-
-  1. Start Iteration (from CLAUDE.md requirements)
-
-  2. Write ONE test OR ONE file (never both)
-  - Either add one test to existing test file
-  - OR modify one source file
-  - NEVER multiple tests in single iteration
-
-  3. Fix TypeScript errors (if any)
-  - Run npx tsc --noEmit to check
-
-  4. Fix lint errors (if any)
-  - Run npm run lint
-
-  5. Run tests
-  - Execute relevant test command
-
-  6. Report coverage
-  - Show exact coverage metrics
-  - All four metrics: statements, branches, functions, lines
-
-  7. Wait for confirmation
-  - STOP and wait for user to say "proceed" or similar
-
-  8. Unit Tests Phase (if needed)
-  - Create unit tests ONE BY ONE
-  - Each test follows steps 2-7
-  - Improve coverage incrementally
-  - Continue until all files meet requirements (100% or min 80%)
-
-  9. Integration Tests Phase (if needed)
-  - Create integration tests ONE BY ONE
-  - Each test follows steps 2-7
-  - Improve coverage incrementally
-  - Continue until all files meet requirements
-
-  10. Repeat
-  - Go back to step 1 for next iteration
-
-  Key Rules I Must Follow:
-  - NEVER skip waiting for confirmation
-  - NEVER add multiple tests at once
-  - ALWAYS report coverage after running tests
-  - ALWAYS fix TS/lint errors before running tests
-  - NEVER proceed if coverage decreases
-
-  This ensures systematic, predictable development where each change is isolated, tested, and validated before moving forward.
-
 ------------------------------------------------------------------------------------------------------------------
   Read the CLAUDE.md file to understand the iteration workflow and the consequences of violating the rules. Give a feedback with your own words.
 ----------------------------------------------------------------------------------------
@@ -156,25 +106,51 @@ Success Criteria
 
 Continue with next iteration following these guidelines.
 
----------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+ I want to add some shortcuts to use in terminal. Could you help me please?
+ nxkp for npx kill-port
+ nrb for npm run build
+  veh for geting the kist of shortcuts we have created now an earlier if it is possible
+
+--------------------------------------------------------------------------------------------------------
 CHECK GIT LOGS INSPECT FROM THE LATEST COMMIT UP TO NOW CHANGES AND CREATE A MEANINGFUL COMMIT MESSAGE. NOT EXECUTE COMMIT.
--------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
 
-  f  feat: implement DELETE /admin/events/:id endpoint and graceful shutdown system
+feat: implement comprehensive health monitoring dashboard with real-time metrics tracking
 
-  - Add DELETE endpoint to admin-events.controller.ts with proper authorization
-  - Implement deleteEvent method in events.service.ts with existence validation
-  - Create comprehensive GracefulShutdownService with multi-phase shutdown process
-  - Integrate graceful shutdown with main.ts signal handlers (SIGTERM, SIGINT, exceptions)
-  - Add priority-based cleanup task execution with timeout handling
-  - Enhance application bootstrap with proper logging and error handling
+  - Add complete health monitoring system with HealthMonitoringService
+  - Create interactive HTML dashboard with real-time AJAX updates
+  - Implement RequestMetricsInterceptor for automatic request/error tracking
+  - Add health dashboard with recent errors display and shutdown status indicator
+  - Create responsive UI with pause/resume controls and refresh interval selection
+  - Add comprehensive unit tests achieving 100% coverage for interceptors
+  - Integrate health monitoring with graceful shutdown system
+  - Add health module and controllers for /health, /ready, /metrics endpoints
+  - Update app module to include health monitoring interceptor and services
 
-  Test Coverage Improvements:
-  - Add 61 new unit tests (70 → 131 total)
-  - Add 33 new integration tests (57 → 90 total)
-  - Achieve 100% test coverage for all new functionality
-  - Improve branch coverage in zod-validation.pipe.ts and events.service.ts
-  - Add comprehensive error handling tests for all shutdown scenarios
+  🚀 Features:
+  - Real-time health dashboard at /health endpoint
+  - Recent errors display with timestamps and details
+  - Shutdown status monitoring with graceful shutdown integration
+  - Request metrics tracking with performance monitoring
+  - Mobile-responsive design with control panels
+  - Comprehensive test coverage for new components
 
+  Summary of Changes:
 
- 
+  New Files Added:
+  - src/controllers/health.controller.ts - Health dashboard controller
+  - src/health/health.module.ts - Health module configuration
+  - src/services/health-monitoring.service.ts - Core health monitoring service
+  - src/interceptors/request-metrics.interceptor.ts - Request metrics collection
+  - src/public/health-dashboard.js - Interactive dashboard JavaScript
+  - test/unit/services/health-monitoring.service.spec.ts - Unit tests
+  - test/unit/interceptors/request-metrics.interceptor.spec.ts - Unit tests
+  - test/unit/controllers/health.controller.spec.ts - Unit tests
+
+  Modified Files:
+  - src/app.module.ts - Integrated health monitoring system
+  - src/main.ts - Added health endpoint configuration
+  - Various test files - Updated for health monitoring integration
+  - .gitignore - Updated ignore patterns
+  - nest-cli.json - Updated CLI configuration

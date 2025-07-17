@@ -21,7 +21,6 @@ describe('Prisma Integration Tests', () => {
       delete process.env.NODE_ENV
     }
 
-    // Clean up any Prisma instances
     await disconnectPrisma()
   })
 

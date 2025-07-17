@@ -18,6 +18,7 @@ import {
   PrismaClientRustPanicError,
   PrismaClientInitializationError,
 } from '../../../src/lib/prisma'
+import { HealthMonitoringService } from '../../../src/services/health-monitoring.service'
 
 interface ErrorResponse {
   statusCode: number
@@ -155,7 +156,12 @@ describe('AllExceptionsFilter (Integration)', () => {
     }).compile()
 
     app = moduleFixture.createNestApplication()
-    app.useGlobalFilters(new AllExceptionsFilter())
+
+    const mockHealthMonitoringService = {
+      recordError: jest.fn(),
+    } as any
+
+    app.useGlobalFilters(new AllExceptionsFilter(mockHealthMonitoringService))
     await app.init()
   })
 
