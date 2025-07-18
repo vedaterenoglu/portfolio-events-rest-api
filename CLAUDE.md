@@ -58,7 +58,10 @@ Each iteration allows ONLY ONE of these actions:
 # See PROJECT.md "Quick Start Commands" section for full list
 npm run test:unit:coverage      # Unit tests with coverage
 npm run test:integration:coverage # Integration tests with coverage
+npm run test:e2e:coverage       # E2E tests with coverage
 npm run test:ci                 # All tests sequentially
+npm run test:parallel           # Parallel test execution (optimized)
+npm run test:parallel:sequential # Fallback sequential mode
 ```
 
 ## ⚡ Quick Command Aliases
@@ -141,7 +144,7 @@ export class UserService {
 
 ## 📁 Key File Locations
 
-- **Project Documentation**: `PROJECT.md`
+- **Project Documentation**: `src/documents/ignore/PROJECT.md`
 - **API Endpoints**: See comprehensive list below
 - **Database Schema**: See PROJECT.md "Database Schema"
 - **Security Config**: See PROJECT.md "Security Implementation"
@@ -150,15 +153,18 @@ export class UserService {
 ## 🌐 Complete API Endpoints Reference
 
 ### Base URL
+
 - **Development**: `http://localhost:3060`
 - **Production**: `https://portfolio-events-rest-api.demo.vedaterenoglu.com`
 
 ### Authentication
+
 - **Type**: JWT Bearer Token (Clerk-based)
 - **Header**: `Authorization: Bearer <jwt-token>`
 - **Required for**: All admin endpoints (`/api/admin/*` and `/admin/*`)
 
 ### Public Endpoints (No Authentication)
+
 ```
 GET    /                          - Hello message
 GET    /api/events                - Get all events (with filtering)
@@ -174,6 +180,7 @@ POST   /api/auth/test-token-real  - Get real JWT token via Clerk
 ```
 
 ### Admin Endpoints (JWT + Admin Role Required)
+
 ```
 POST   /api/admin/events          - Create new event
 PUT    /api/admin/events/:id      - Update event by ID (numeric)
@@ -185,16 +192,19 @@ DELETE /admin/database/truncate   - Truncate all tables
 ```
 
 ### Key Path Parameter Types
+
 - **Event ID**: `number` (integer) - Used in `/api/admin/events/:id`
 - **Event Slug**: `string` (max 100 chars) - Used in `/api/events/:slug`
 - **City Slug**: `string` (max 50 chars) - Used in `/api/admin/cities/:citySlug`
 
 ### Critical Path Patterns
+
 - **Events**: Always use `/api/admin/events` (WITH `/api` prefix)
 - **Cities**: Always use `/api/admin/cities` (WITH `/api` prefix)
 - **Database**: Always use `/admin/database/` (WITHOUT `/api` prefix)
 
 ### OpenAPI Documentation
+
 - **URL**: `/api/docs` - Interactive Swagger UI with authentication
 
 ## 🛠️ Development Workflow Examples
@@ -212,6 +222,7 @@ For detailed examples of:
 - "Development Workflow"
 - "Common Tasks & Solutions"
 - "Troubleshooting Guide"
+- "Performance Optimization"
 
 ## 🤖 AI Agent Quick Reference
 
@@ -225,10 +236,28 @@ npx tsc --noEmit  # Check types (alias: nxtsc)
 npm run lint      # Check code quality (alias: nrl)
 
 # Before committing
-npm run test:ci   # Run all tests
+npm run test:ci   # Run all tests sequentially
+npm run test:parallel # Run tests in parallel (faster)
 npm run format    # Format code
+
+# Testing and Code Quality
+# Run before committing changes:
 ```
 
 ---
 
-**Remember**: This document provides the essential workflow and rules. For technical details, architecture, and implementation guidance, always consult **[PROJECT.md](./PROJECT.md)**.
+**Remember**: This document provides the essential workflow and rules. For technical details, architecture, and implementation guidance, always consult **[PROJECT.md](./src/documents/ignore/PROJECT.md)**.
+
+
+## 🤖 AI Agent PROJECT.md Reference
+
+**CRITICAL**: AI Agents MUST read PROJECT.md before starting any development work. It contains:
+
+- Complete architecture overview and directory structure
+- Database schema and API endpoints documentation
+- Security implementation details
+- Testing strategy and development configuration
+- Development workflow examples and troubleshooting guide
+- All essential technical specifications for the project
+
+**Path**: `src/documents/ignore/PROJECT.md`
