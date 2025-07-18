@@ -20,7 +20,8 @@ afterAll(() => {
 
 // Mock process.env for tests
 process.env.NODE_ENV = 'test'
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
+// Use the actual database URL from .env file for e2e tests
+// Note: This will use the production database with test data isolation
 
 // Global test timeout for e2e tests
 jest.setTimeout(60000)

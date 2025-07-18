@@ -54,8 +54,5 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-CLAUDE.md
-CLAUDE2.md 
-PROJECT.md
-z.text
-todo-report.txt
+src/documents/ignore
+

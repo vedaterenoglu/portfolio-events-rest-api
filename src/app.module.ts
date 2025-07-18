@@ -8,6 +8,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { CitiesModule } from './cities/cities.module'
+import { getThrottlingConfig } from './config/throttling.config'
 import { DatabaseModule } from './database/database.module'
 import { EventsModule } from './events/events.module'
 import { HealthModule } from './health/health.module'
@@ -26,11 +27,7 @@ import { LoggerModule } from './services/logger/logger.module'
     AdminModule,
     AuthModule,
     HealthModule,
-    ThrottlerModule.forRoot([
-      // todo: request must satisfy both short and long limits
-      { name: 'short', ttl: 1000, limit: 3 },
-      { name: 'long', ttl: 60000, limit: 100 },
-    ]),
+    ThrottlerModule.forRoot(getThrottlingConfig()),
     LoggerModule,
   ],
   controllers: [AppController],

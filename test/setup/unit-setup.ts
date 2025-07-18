@@ -10,14 +10,28 @@ const mockSanitize = jest.fn(
       KEEP_CONTENT?: boolean
     },
   ) => {
-    if (options?.KEEP_CONTENT === true) {
-      // removeHTMLCompletely = false: preserve input
-      return input
-    } else if (options?.ALLOWED_TAGS?.length === 0) {
+    if (options?.ALLOWED_TAGS?.length === 0) {
       // removeHTMLCompletely = true: remove HTML tags
-      let result = input.replace(/<script[^>]*>.*?<\/script>/gi, '')
+      let result = input.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
       result = result.replace(/<[^>]*>/g, '')
       return result
+    } else if (options?.ALLOWED_TAGS && options.ALLOWED_TAGS.length > 0) {
+      // sanitizeRichText: filter tags based on allowedTags (with or without KEEP_CONTENT)
+      let result = input.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      const allowedTags = options.ALLOWED_TAGS
+      result = result.replace(
+        /<(\/?)([\w\d]+)([^>]*)>/g,
+        (match, _slash, tag) => {
+          if (allowedTags.includes(String(tag).toLowerCase())) {
+            return match
+          }
+          return ''
+        },
+      )
+      return result
+    } else if (options?.KEEP_CONTENT === true) {
+      // removeHTMLCompletely = false: preserve input
+      return input
     }
     return input
   },
@@ -63,7 +77,7 @@ beforeEach(() => {
         return input
       } else if (options?.ALLOWED_TAGS?.length === 0) {
         // removeHTMLCompletely = true: remove HTML tags
-        let result = input.replace(/<script[^>]*>.*?<\/script>/gi, '')
+        let result = input.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
         result = result.replace(/<[^>]*>/g, '')
         return result
       }
@@ -85,6 +99,8 @@ global.console = {
 // Mock process.env for tests
 process.env.NODE_ENV = 'test'
 process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
+process.env.CLERK_SECRET_KEY = 'sk_test_mock_key_for_unit_tests'
+process.env.CLERK_PUBLISHABLE_KEY = 'pk_test_mock_key_for_unit_tests'
 
 // Global test timeout
 jest.setTimeout(10000)
