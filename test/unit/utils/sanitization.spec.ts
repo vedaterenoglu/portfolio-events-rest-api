@@ -17,10 +17,34 @@ describe('sanitizeHTML', () => {
     expect(result).toBe('')
   })
 
+  it('should return empty string for null input', () => {
+    const result = sanitizeHTML(null as unknown as string, {})
+    expect(result).toBe('')
+  })
+
+  it('should return empty string for non-string input', () => {
+    const result = sanitizeHTML(123 as unknown as string, {})
+    expect(result).toBe('')
+  })
+
   it('should preserve input when removeHTMLCompletely is false', () => {
     const input = 'Hello <strong>World</strong>'
     const result = sanitizeHTML(input, { removeHTMLCompletely: false })
     expect(result).toBe('Hello <strong>World</strong>')
+  })
+
+  it('should use allowed tags and attributes when provided', () => {
+    const input =
+      '<p class="test">Hello <strong>World</strong> <script>alert("xss")</script></p>'
+    const result = sanitizeHTML(input, {
+      allowedTags: ['p', 'strong'],
+      allowedAttributes: ['class'],
+      removeHTMLCompletely: false,
+    })
+    // DOMPurify keeps the script tag but removes the script content
+    expect(result).toBe(
+      '<p class="test">Hello <strong>World</strong> <script>alert("xss")</script></p>',
+    )
   })
 
   it('should truncate output when maxLength is specified', () => {

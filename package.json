@@ -45,7 +45,8 @@
     "test:e2e:coverage": "jest --config ./test/jest-e2e.json --coverage",
     "test:e2e:watch": "jest --config ./test/jest-e2e.json --watch",
     "test:ci": "npm run test:unit:coverage && npm run test:integration:coverage && npm run test:e2e:coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config ./test/jest-unit.json --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config ./test/jest-unit.json --runInBand",
+    "seed": "ts-node ./seed/seed-db.ts"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",

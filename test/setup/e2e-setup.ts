@@ -1,4 +1,8 @@
 import 'reflect-metadata'
+import { config } from 'dotenv'
+
+// Load environment variables from .env.test file
+config({ path: '.env.test' })
 
 // Global test setup for e2e tests
 beforeEach(() => {
