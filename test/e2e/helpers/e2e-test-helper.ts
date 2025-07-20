@@ -74,7 +74,7 @@ export class E2ETestHelper {
     await this.app.init()
 
     // Generate admin token for testing
-    this.adminToken = await this.generateAdminToken()
+    this.adminToken = this.generateAdminToken()
   }
 
   async teardown(): Promise<void> {
@@ -148,14 +148,12 @@ export class E2ETestHelper {
     })
   }
 
-  async generateAdminToken(): Promise<string> {
-    // Generate a test admin token
-    // This would normally integrate with your auth service
-    const response = await request(this.app.getHttpServer() as never)
-      .post('/api/auth/test-token')
-      .send({ role: 'admin' })
-
-    return (response.body as { token: string }).token
+  generateAdminToken(): string {
+    // Generate a mock admin token for testing
+    // This mimics the structure of a real JWT but is only for testing
+    const mockToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LWFkbWluLWlkIiwicm9sZSI6ImFkbWluIiwiZXhwIjo5OTk5OTk5OTk5fQ.test-signature'
+    return mockToken
   }
 
   getApp(): INestApplication {

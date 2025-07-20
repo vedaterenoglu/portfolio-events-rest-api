@@ -1,5 +1,53 @@
 # AI Agent Development Guidelines - Portfolio Events API
 
+## Core Principles
+
+Apply SOLID principles consistently throughout all code creation. Prioritize separation of concerns and testability in every file you create.
+
+## File Creation Rules
+
+### Testability First
+
+- **Pure Functions**: Create functions without side effects whenever possible
+- **Injectable Dependencies**: Make all dependencies explicit and injectable
+- **Small, Focused Units**: Keep functions and classes small with single responsibilities
+- **Clear Contracts**: Define explicit input/output interfaces
+
+### Separation of Concerns
+
+- **Layer Isolation**: Domain logic separate from infrastructure, presentation separate from business rules
+- **Single Purpose Files**: Each file should have one clear responsibility
+- **Minimal Dependencies**: Reduce coupling between modules
+- **Abstract External Systems**: Interface with databases, APIs, and external services through abstractions
+
+### Architecture Guidelines
+
+- **Domain-Driven Structure**: Organize by business concepts, not technical layers
+- **Dependency Direction**: High-level modules depend on abstractions, not implementations
+- **Composition Over Inheritance**: Build complexity through composition
+- **Interface Segregation**: Create focused, client-specific interfaces
+
+## Pre-Creation Checklist
+
+Before creating any file, ensure:
+
+- [ ] Purpose is singular and clear
+- [ ] Dependencies are injectable
+- [ ] Can be unit tested in isolation
+- [ ] Follows appropriate layer boundaries
+- [ ] Implements focused interfaces
+
+## Testing Mindset
+
+- **Design for Testing**: Consider how each component will be tested while writing it
+- **Mock External Dependencies**: Abstract all I/O operations for easy mocking
+- **Behavior Focus**: Test what the code does, not how it does it
+- **Fast Feedback**: Ensure tests run quickly and provide clear failure messages
+
+---
+
+**Key Reminder**: Every file should be independently testable and have a single, clear reason to exist.
+
 ## 📋 Essential Project Information
 
 **For comprehensive project details, architecture, and API documentation, refer to:**  
@@ -59,17 +107,7 @@ Each iteration allows ONLY ONE of these actions:
 npm run test:unit:coverage      # Unit tests with coverage
 npm run test:integration:coverage # Integration tests with coverage
 npm run test:e2e:coverage       # E2E tests with coverage
-npm run test:ci                 # All tests sequentially
-npm run test:parallel           # Parallel test execution (optimized)
-npm run test:parallel:sequential # Fallback sequential mode
-```
-
-## ⚡ Quick Command Aliases
-
-```bash
-nxtsc  # npx tsc --noEmit (TypeScript checking)
-nrl    # npm run lint (ESLint checking)
-veh    # Show all custom shortcuts
+npm run test:all                # All tests sequentially (unit + integration + e2e)
 ```
 
 ## 🚨 Critical Rules
@@ -83,7 +121,7 @@ veh    # Show all custom shortcuts
 
 ## 📋 ESLint Rules for AI Agents
 
-**IMPORTANT**: When creating new files, follow these ESLint rules to avoid linting errors:
+**IMPORTANT**: When creating new files, follow these ESLint rules to avoid linting errors
 
 ### Code Style Rules
 
@@ -175,8 +213,6 @@ GET    /health/json               - Health status (JSON)
 GET    /ready                     - Readiness check
 GET    /metrics                   - System metrics
 GET    /shutdown                  - Shutdown status
-POST   /api/auth/test-token       - Get mock JWT token
-POST   /api/auth/test-token-real  - Get real JWT token via Clerk
 ```
 
 ### Admin Endpoints (JWT + Admin Role Required)
@@ -236,18 +272,13 @@ npx tsc --noEmit  # Check types (alias: nxtsc)
 npm run lint      # Check code quality (alias: nrl)
 
 # Before committing
-npm run test:ci   # Run all tests sequentially
-npm run test:parallel # Run tests in parallel (faster)
-npm run format    # Format code
-
-# Testing and Code Quality
-# Run before committing changes:
+npm run test:all      # Run all tests sequentially
+npm run format        # Format code
 ```
 
 ---
 
 **Remember**: This document provides the essential workflow and rules. For technical details, architecture, and implementation guidance, always consult **[PROJECT.md](./src/documents/ignore/PROJECT.md)**.
-
 
 ## 🤖 AI Agent PROJECT.md Reference
 

@@ -6,6 +6,7 @@ import tseslint from 'typescript-eslint'
 // === NEW IMPORTS FOR RECOMMENDED PLUGINS ===
 import pluginSecurity from 'eslint-plugin-security'
 import pluginImport from 'eslint-plugin-import' // For import/order rule
+import pluginJest from 'eslint-plugin-jest' // For Jest-specific rules
 // ===========================================
 
 export default tseslint.config(
@@ -134,5 +135,18 @@ export default tseslint.config(
       },
     },
     // =================================
+  },
+  // Override for test files to use Jest-specific rules
+  {
+    files: ['test/**/*.ts', '**/*.spec.ts', '**/*.test.ts'],
+    plugins: {
+      jest: pluginJest,
+    },
+    rules: {
+      // Disable TypeScript's unbound-method rule for test files
+      '@typescript-eslint/unbound-method': 'off',
+      // Enable Jest's unbound-method rule instead
+      'jest/unbound-method': 'error',
+    },
   },
 )

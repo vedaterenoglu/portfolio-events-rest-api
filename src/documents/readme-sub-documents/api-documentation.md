@@ -13,27 +13,6 @@ The API uses JWT Bearer tokens for authentication:
 Authorization: Bearer <your-jwt-token>
 ```
 
-### Getting Test Tokens
-
-```bash
-# Mock JWT Token (Development)
-POST /api/auth/test-token
-Content-Type: application/json
-
-{
-  "username": "admin@example.com",
-  "password": "admin123"
-}
-
-# Real JWT Token (via Clerk)
-POST /api/auth/test-token-real
-Content-Type: application/json
-
-{
-  "username": "real@example.com",
-  "password": "realpassword"
-}
-```
 
 ## 📋 API Endpoints Overview
 
@@ -193,12 +172,6 @@ Visit `http://localhost:3060/api/docs` for interactive API documentation with:
 - Schema validation
 - Live API testing
 
-### Postman Collection
-Import the complete Postman collection:
-- File: `src/documents/ignore/Portfolio_Events_API.postman_collection.json`
-- Includes all endpoints with examples
-- Pre-configured environment variables
-
 ## 🔒 Security Features
 
 ### Rate Limiting
@@ -250,13 +223,8 @@ Use the health check endpoint to verify API status:
 curl -X GET http://localhost:3060/health/json
 ```
 
-For authentication testing:
+For authenticated requests:
 ```bash
-# Get test token
-curl -X POST http://localhost:3060/api/auth/test-token \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin@example.com", "password": "admin123"}'
-
 # Use token in authenticated request
 curl -X GET http://localhost:3060/api/admin/events \
   -H "Authorization: Bearer <your-token>"

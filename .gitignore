@@ -37,12 +37,9 @@ lerna-debug.log*
 
 # dotenv environment variable files
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-# Production env file with real values (template .env.production is safe to commit)
-.env.production.real
+.env.development
+.env.test
+.env.production
 
 # temp directory
 .temp
@@ -58,3 +55,4 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 src/documents/ignore
 
+CLAUDE.md

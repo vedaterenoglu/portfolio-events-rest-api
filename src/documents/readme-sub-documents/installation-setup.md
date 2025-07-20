@@ -122,9 +122,7 @@ npx prisma studio
 
 ### JWT Configuration
 
-The API uses JWT tokens for authentication. Test tokens can be obtained from:
-- `POST /api/auth/test-token` - Mock JWT for development
-- `POST /api/auth/test-token-real` - Real JWT via Clerk
+The API uses JWT tokens for authentication provided by Clerk.
 
 ## 🚦 Health Check
 
@@ -140,7 +138,6 @@ Should return system health information.
 
 Once running, access interactive API documentation:
 - **Swagger UI**: `http://localhost:3060/api/docs`
-- **Postman Collection**: Available in `src/documents/ignore/`
 
 ## 🐛 Troubleshooting
 

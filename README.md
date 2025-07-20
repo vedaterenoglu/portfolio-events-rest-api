@@ -66,7 +66,6 @@ npm run start:dev
 
 - **Swagger UI**: `http://localhost:3060/api/docs`
 - **Health Dashboard**: `http://localhost:3060/health`
-- **Postman Collection**: [Download Collection](src/documents/ignore/Portfolio_Events_API.postman_collection.json)
 
 ## 🛠️ Development
 
