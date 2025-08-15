@@ -30,6 +30,7 @@ describe('AppModule', () => {
   afterEach(async () => {
     // Restore original environment variables
     process.env = originalEnv
+    // eslint-disable-next-line prettier/prettier
     
     if (module) {
       await module.close()

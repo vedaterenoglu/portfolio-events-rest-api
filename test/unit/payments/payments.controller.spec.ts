@@ -8,6 +8,8 @@ import {
   SessionVerificationResponse,
 } from '../../../src/schemas/payment.schema'
 
+import type Stripe from 'stripe'
+
 describe('PaymentsController', () => {
   let controller: PaymentsController
   let paymentsService: PaymentsService
@@ -27,7 +29,7 @@ describe('PaymentsController', () => {
     sessionId: 'cs_test_123',
   }
 
-  const mockStripeSession = {
+  const mockStripeSession: Partial<Stripe.Checkout.Session> = {
     id: 'cs_test_123',
     status: 'complete',
     payment_status: 'paid',
@@ -51,15 +53,7 @@ describe('PaymentsController', () => {
     payment_intent: 'pi_test_123',
     payment_method_collection: 'always',
     payment_method_types: ['card'],
-    phone_number_collection: { enabled: false },
-    recovered_from: null,
-    setup_intent: null,
-    shipping: null,
-    shipping_address_collection: null,
-    submit_type: null,
-    subscription: null,
     success_url: 'https://example.com/success',
-    total_details: null,
     url: null,
   }
 
@@ -97,7 +91,9 @@ describe('PaymentsController', () => {
         .spyOn(paymentsService, 'createCheckoutSession')
         .mockResolvedValue(mockCheckoutSessionResponse)
 
-      const result = await controller.createCheckoutSession(mockCheckoutSessionDto)
+      const result = await controller.createCheckoutSession(
+        mockCheckoutSessionDto,
+      )
 
       expect(paymentsService.createCheckoutSession).toHaveBeenCalledWith(
         mockCheckoutSessionDto,
@@ -121,12 +117,14 @@ describe('PaymentsController', () => {
         checkoutUrl: 'https://custom.stripe.com/session',
         sessionId: 'cs_custom_456',
       }
-      
+
       jest
         .spyOn(paymentsService, 'createCheckoutSession')
         .mockResolvedValue(customResponse)
 
-      const result = await controller.createCheckoutSession(mockCheckoutSessionDto)
+      const result = await controller.createCheckoutSession(
+        mockCheckoutSessionDto,
+      )
 
       expect(result).toBe(customResponse) // Check reference equality
       expect(result).toEqual(customResponse)
@@ -137,7 +135,9 @@ describe('PaymentsController', () => {
     it('should verify a session successfully', async () => {
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(mockStripeSession as any)
+        .mockResolvedValue(
+          mockStripeSession as unknown as Stripe.Checkout.Session,
+        )
 
       const result = await controller.verifySession('cs_test_123')
 
@@ -160,10 +160,10 @@ describe('PaymentsController', () => {
         status: 'open',
         payment_status: 'unpaid',
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(openSession as any)
+        .mockResolvedValue(openSession as unknown as Stripe.Checkout.Session)
 
       const result = await controller.verifySession('cs_test_456')
 
@@ -185,10 +185,10 @@ describe('PaymentsController', () => {
         status: 'expired',
         payment_status: 'unpaid',
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(expiredSession as any)
+        .mockResolvedValue(expiredSession as unknown as Stripe.Checkout.Session)
 
       const result = await controller.verifySession('cs_expired_789')
 
@@ -202,10 +202,10 @@ describe('PaymentsController', () => {
         status: 'complete',
         payment_status: 'no_payment_required',
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(freeSession as any)
+        .mockResolvedValue(freeSession as unknown as Stripe.Checkout.Session)
 
       const result = await controller.verifySession('cs_free_000')
 
@@ -217,10 +217,12 @@ describe('PaymentsController', () => {
         ...mockStripeSession,
         metadata: undefined,
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(sessionWithoutMetadata as any)
+        .mockResolvedValue(
+          sessionWithoutMetadata as unknown as Stripe.Checkout.Session,
+        )
 
       const result = await controller.verifySession('cs_no_meta')
 
@@ -232,10 +234,12 @@ describe('PaymentsController', () => {
         ...mockStripeSession,
         metadata: null,
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(sessionWithNullMetadata as any)
+        .mockResolvedValue(
+          sessionWithNullMetadata as unknown as Stripe.Checkout.Session,
+        )
 
       const result = await controller.verifySession('cs_null_meta')
 
@@ -248,10 +252,12 @@ describe('PaymentsController', () => {
         ...mockStripeSession,
         metadata: {},
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(sessionWithEmptyMetadata as any)
+        .mockResolvedValue(
+          sessionWithEmptyMetadata as unknown as Stripe.Checkout.Session,
+        )
 
       const result = await controller.verifySession('cs_empty_meta')
 
@@ -260,13 +266,11 @@ describe('PaymentsController', () => {
 
     it('should pass through service errors', async () => {
       const error = new Error('Session not found')
-      jest
-        .spyOn(paymentsService, 'verifySession')
-        .mockRejectedValue(error)
+      jest.spyOn(paymentsService, 'verifySession').mockRejectedValue(error)
 
-      await expect(
-        controller.verifySession('cs_invalid'),
-      ).rejects.toThrow(error)
+      await expect(controller.verifySession('cs_invalid')).rejects.toThrow(
+        error,
+      )
     })
 
     it('should correctly map all session properties', async () => {
@@ -287,12 +291,13 @@ describe('PaymentsController', () => {
         payment_intent: 'pi_456',
         amount_total: 24995,
       }
-      
+
       jest
         .spyOn(paymentsService, 'verifySession')
-        .mockResolvedValue(fullSession as any)
+        .mockResolvedValue(fullSession as unknown as Stripe.Checkout.Session)
 
-      const result: SessionVerificationResponse = await controller.verifySession('cs_full_test')
+      const result: SessionVerificationResponse =
+        await controller.verifySession('cs_full_test')
 
       // Should only include the mapped properties
       expect(result).toEqual({
@@ -308,7 +313,7 @@ describe('PaymentsController', () => {
           totalAmount: '249.95',
         },
       })
-      
+
       // Should not include unmapped properties
       expect(result).not.toHaveProperty('customer')
       expect(result).not.toHaveProperty('payment_intent')

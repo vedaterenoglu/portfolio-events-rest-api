@@ -1,13 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { BadRequestException, NotFoundException } from '@nestjs/common'
+import { Test, TestingModule } from '@nestjs/testing'
+import Stripe from 'stripe'
 
-import { PaymentsService } from '../../../src/payments/payments.service'
 import { EventsService } from '../../../src/events/events.service'
-import { LoggerService } from '../../../src/services/logger/logger.service'
+import { PaymentsService } from '../../../src/payments/payments.service'
 import {
   CreateCheckoutSessionDto,
   CheckoutSessionResponse,
 } from '../../../src/schemas/payment.schema'
+import { LoggerService } from '../../../src/services/logger/logger.service'
 
 // Mock Stripe module
 jest.mock('stripe')
@@ -70,7 +71,7 @@ describe('PaymentsService', () => {
 
     // Reset all mocks
     jest.clearAllMocks()
-    
+
     // Create mock Stripe instance
     mockStripeInstance = {
       checkout: {
@@ -82,11 +83,17 @@ describe('PaymentsService', () => {
     }
 
     // Mock Stripe constructor
-    const Stripe = require('stripe')
-    Stripe.mockImplementation(() => mockStripeInstance)
-    
+    const MockedStripe = jest.mocked(Stripe)
+    MockedStripe.mockImplementation(
+      () => mockStripeInstance as unknown as Stripe,
+    )
+
     // Mock Stripe.errors for error handling tests
-    Stripe.errors = {
+    ;(
+      MockedStripe as unknown as {
+        errors: { StripeError: new (message: string) => Error }
+      }
+    ).errors = {
       StripeError: class StripeError extends Error {
         constructor(message: string) {
           super(message)
@@ -133,15 +140,15 @@ describe('PaymentsService', () => {
 
     it('should throw error if STRIPE_SECRET_KEY is not set', () => {
       delete process.env.STRIPE_SECRET_KEY
-      
+
       expect(() => {
         new PaymentsService(eventsService, loggerService)
       }).toThrow('STRIPE_SECRET_KEY environment variable is required')
     })
 
     it('should initialize Stripe with correct API version', () => {
-      const Stripe = require('stripe')
-      expect(Stripe).toHaveBeenCalledWith('sk_test_mock_key', {
+      const MockedStripe = jest.mocked(Stripe)
+      expect(MockedStripe).toHaveBeenCalledWith('sk_test_mock_key', {
         apiVersion: '2025-06-30.basil',
       })
     })
@@ -150,11 +157,12 @@ describe('PaymentsService', () => {
   describe('createCheckoutSession', () => {
     it('should create a checkout session successfully', async () => {
       jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(mockEvent)
-      mockStripeInstance.checkout.sessions.create.mockResolvedValue(mockCheckoutSession)
-
-      const result: CheckoutSessionResponse = await service.createCheckoutSession(
-        mockCreateCheckoutSessionDto,
+      mockStripeInstance.checkout.sessions.create.mockResolvedValue(
+        mockCheckoutSession,
       )
+
+      const result: CheckoutSessionResponse =
+        await service.createCheckoutSession(mockCreateCheckoutSessionDto)
 
       expect(eventsService.getEventBySlug).toHaveBeenCalledWith('test-event')
       expect(mockStripeInstance.checkout.sessions.create).toHaveBeenCalledWith({
@@ -174,7 +182,8 @@ describe('PaymentsService', () => {
           },
         ],
         mode: 'payment',
-        success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+        success_url:
+          'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: 'https://example.com/cancel',
         metadata: {
           eventSlug: 'test-event',
@@ -196,8 +205,12 @@ describe('PaymentsService', () => {
 
     it('should handle event without imageUrl', async () => {
       const eventWithoutImage = { ...mockEvent, imageUrl: '' }
-      jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(eventWithoutImage)
-      mockStripeInstance.checkout.sessions.create.mockResolvedValue(mockCheckoutSession)
+      jest
+        .spyOn(eventsService, 'getEventBySlug')
+        .mockResolvedValue(eventWithoutImage)
+      mockStripeInstance.checkout.sessions.create.mockResolvedValue(
+        mockCheckoutSession,
+      )
 
       await service.createCheckoutSession(mockCreateCheckoutSessionDto)
 
@@ -205,7 +218,9 @@ describe('PaymentsService', () => {
         expect.objectContaining({
           line_items: [
             expect.objectContaining({
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               price_data: expect.objectContaining({
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 product_data: expect.objectContaining({
                   images: [],
                 }),
@@ -223,7 +238,9 @@ describe('PaymentsService', () => {
         totalAmount: 99.99,
       }
       jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(mockEvent)
-      mockStripeInstance.checkout.sessions.create.mockResolvedValue(mockCheckoutSession)
+      mockStripeInstance.checkout.sessions.create.mockResolvedValue(
+        mockCheckoutSession,
+      )
 
       await service.createCheckoutSession(singleQuantityDto)
 
@@ -231,7 +248,9 @@ describe('PaymentsService', () => {
         expect.objectContaining({
           line_items: [
             expect.objectContaining({
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               price_data: expect.objectContaining({
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 product_data: expect.objectContaining({
                   description: '1 ticket for Test Event',
                 }),
@@ -243,7 +262,9 @@ describe('PaymentsService', () => {
     })
 
     it('should throw NotFoundException when event not found', async () => {
-      jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(null as unknown as typeof mockEvent)
+      jest
+        .spyOn(eventsService, 'getEventBySlug')
+        .mockResolvedValue(null as unknown as typeof mockEvent)
 
       await expect(
         service.createCheckoutSession(mockCreateCheckoutSessionDto),
@@ -260,7 +281,7 @@ describe('PaymentsService', () => {
       await expect(
         service.createCheckoutSession(mismatchedDto),
       ).rejects.toThrow(BadRequestException)
-      
+
       expect(loggerService.warn).toHaveBeenCalledWith(
         'Price mismatch attempt detected',
         expect.objectContaining({
@@ -274,20 +295,20 @@ describe('PaymentsService', () => {
     it('should throw BadRequestException when total amount calculation is wrong', async () => {
       const wrongTotalDto = {
         ...mockCreateCheckoutSessionDto,
-        totalAmount: 150.00, // Wrong total
+        totalAmount: 150.0, // Wrong total
       }
       jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(mockEvent)
 
       await expect(
         service.createCheckoutSession(wrongTotalDto),
       ).rejects.toThrow(BadRequestException)
-      
+
       expect(loggerService.warn).toHaveBeenCalledWith(
         'Total amount calculation error',
         expect.objectContaining({
           eventSlug: 'test-event',
           expectedTotal: 199.98,
-          clientTotal: 150.00,
+          clientTotal: 150.0,
         }),
       )
     })
@@ -295,7 +316,9 @@ describe('PaymentsService', () => {
     it('should throw BadRequestException when checkout URL is not generated', async () => {
       const sessionWithoutUrl = { ...mockCheckoutSession, url: null }
       jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(mockEvent)
-      mockStripeInstance.checkout.sessions.create.mockResolvedValue(sessionWithoutUrl)
+      mockStripeInstance.checkout.sessions.create.mockResolvedValue(
+        sessionWithoutUrl,
+      )
 
       await expect(
         service.createCheckoutSession(mockCreateCheckoutSessionDto),
@@ -303,16 +326,20 @@ describe('PaymentsService', () => {
     })
 
     it('should handle Stripe API errors', async () => {
-      const Stripe = require('stripe')
-      const stripeError = new Stripe.errors.StripeError('Stripe API error')
-      
+      const MockedStripe = jest.mocked(Stripe) as unknown as {
+        errors: { StripeError: new (message: string) => Error }
+      }
+      const stripeError = new MockedStripe.errors.StripeError(
+        'Stripe API error',
+      )
+
       jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(mockEvent)
       mockStripeInstance.checkout.sessions.create.mockRejectedValue(stripeError)
 
       await expect(
         service.createCheckoutSession(mockCreateCheckoutSessionDto),
       ).rejects.toThrow('Payment system error')
-      
+
       expect(loggerService.error).toHaveBeenCalledWith(
         expect.stringContaining('Stripe API error'),
       )
@@ -327,7 +354,7 @@ describe('PaymentsService', () => {
       await expect(
         service.createCheckoutSession(mockCreateCheckoutSessionDto),
       ).rejects.toThrow('Failed to create payment session')
-      
+
       expect(loggerService.error).toHaveBeenCalledWith(
         expect.stringContaining('Generic error'),
       )
@@ -335,7 +362,9 @@ describe('PaymentsService', () => {
 
     it('should re-throw NotFoundException from getEventBySlug', async () => {
       const notFoundError = new NotFoundException('Event not found')
-      jest.spyOn(eventsService, 'getEventBySlug').mockRejectedValue(notFoundError)
+      jest
+        .spyOn(eventsService, 'getEventBySlug')
+        .mockRejectedValue(notFoundError)
 
       await expect(
         service.createCheckoutSession(mockCreateCheckoutSessionDto),
@@ -344,12 +373,14 @@ describe('PaymentsService', () => {
 
     it('should handle non-Error objects in catch block', async () => {
       jest.spyOn(eventsService, 'getEventBySlug').mockResolvedValue(mockEvent)
-      mockStripeInstance.checkout.sessions.create.mockRejectedValue('string error')
+      mockStripeInstance.checkout.sessions.create.mockRejectedValue(
+        'string error',
+      )
 
       await expect(
         service.createCheckoutSession(mockCreateCheckoutSessionDto),
       ).rejects.toThrow('Failed to create payment session')
-      
+
       expect(loggerService.error).toHaveBeenCalledWith(
         'Failed to create checkout session: string error',
       )
@@ -358,25 +389,37 @@ describe('PaymentsService', () => {
 
   describe('verifySession', () => {
     it('should verify a session successfully', async () => {
-      mockStripeInstance.checkout.sessions.retrieve.mockResolvedValue(mockCheckoutSession)
+      mockStripeInstance.checkout.sessions.retrieve.mockResolvedValue(
+        mockCheckoutSession,
+      )
 
       const result = await service.verifySession('cs_test_123')
 
-      expect(mockStripeInstance.checkout.sessions.retrieve).toHaveBeenCalledWith('cs_test_123')
+      expect(
+        mockStripeInstance.checkout.sessions.retrieve,
+      ).toHaveBeenCalledWith('cs_test_123')
       expect(result).toEqual(mockCheckoutSession)
-      expect(loggerService.log).toHaveBeenCalledWith('Session verified successfully')
+      expect(loggerService.log).toHaveBeenCalledWith(
+        'Session verified successfully',
+      )
     })
 
     it('should handle Stripe errors during verification', async () => {
-      const Stripe = require('stripe')
-      const stripeError = new Stripe.errors.StripeError('Session not found')
-      
-      mockStripeInstance.checkout.sessions.retrieve.mockRejectedValue(stripeError)
+      const MockedStripe = jest.mocked(Stripe) as unknown as {
+        errors: { StripeError: new (message: string) => Error }
+      }
+      const stripeError = new MockedStripe.errors.StripeError(
+        'Session not found',
+      )
+
+      mockStripeInstance.checkout.sessions.retrieve.mockRejectedValue(
+        stripeError,
+      )
 
       await expect(service.verifySession('invalid_session')).rejects.toThrow(
         'Invalid or expired session',
       )
-      
+
       expect(loggerService.error).toHaveBeenCalledWith(
         expect.stringContaining('Session not found'),
       )
@@ -390,7 +433,7 @@ describe('PaymentsService', () => {
       await expect(service.verifySession('cs_test_123')).rejects.toThrow(
         'Session verification failed',
       )
-      
+
       expect(loggerService.error).toHaveBeenCalledWith(
         expect.stringContaining('Network error'),
       )
@@ -405,7 +448,7 @@ describe('PaymentsService', () => {
       await expect(service.verifySession('cs_test_123')).rejects.toThrow(
         'Session verification failed',
       )
-      
+
       expect(loggerService.error).toHaveBeenCalledWith(
         expect.stringContaining('[object Object]'),
       )
