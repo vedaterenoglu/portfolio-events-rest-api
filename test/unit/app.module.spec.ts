@@ -13,14 +13,24 @@ interface ProviderConfig {
 
 describe('AppModule', () => {
   let module: TestingModule
+  const originalEnv = process.env
 
   beforeEach(async () => {
+    // Set required environment variables for testing
+    process.env = {
+      ...originalEnv,
+      STRIPE_SECRET_KEY: 'sk_test_mock_stripe_key_for_testing',
+    }
+
     module = await Test.createTestingModule({
       imports: [AppModule],
     }).compile()
   })
 
   afterEach(async () => {
+    // Restore original environment variables
+    process.env = originalEnv
+    
     if (module) {
       await module.close()
     }

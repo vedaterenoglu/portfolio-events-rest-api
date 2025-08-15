@@ -5,22 +5,31 @@
 </p>
 
 <p align="center">
-  A production-ready, enterprise-grade REST API built with NestJS, TypeScript, and PostgreSQL
+  <strong>Production-Ready Enterprise Event Management REST API</strong><br>
+  Built with NestJS, TypeScript, PostgreSQL, and Stripe
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/NestJS-11.x-red?style=flat-square&logo=nestjs" alt="NestJS">
+  <img src="https://img.shields.io/badge/TypeScript-5.8-blue?style=flat-square&logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PostgreSQL-14.x-blue?style=flat-square&logo=postgresql" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Stripe-18.x-purple?style=flat-square&logo=stripe" alt="Stripe">
+  <img src="https://img.shields.io/badge/Test%20Coverage-100%25-brightgreen?style=flat-square" alt="Coverage">
+</p>
 
 ## 📖 Overview
 
-The **Portfolio Events API** is a comprehensive backend service showcasing advanced NestJS development practices. Built with enterprise-grade architecture, it demonstrates production-ready patterns including authentication, authorization, comprehensive testing, and monitoring capabilities.
+The **Portfolio Events API** is a comprehensive enterprise-grade backend service demonstrating advanced NestJS development practices with real-world payment processing integration. This production-ready API showcases modern architecture patterns, secure authentication, payment processing with Stripe, and comprehensive testing strategies achieving 100% code coverage.
 
 ### 🎯 Key Features
 
-- **🔐 Authentication & Authorization**: JWT-based auth with Clerk integration and role-based access control
-- **🚀 High Performance**: Rate limiting, request optimization, and efficient database queries
-- **🛡️ Enterprise Security**: Input validation, sanitization, and comprehensive security middleware
-- **📊 Monitoring & Health**: Real-time health checks, system metrics, and graceful shutdown
-- **🧪 Testing Excellence**: 100% test coverage with unit, integration, and E2E tests
-- **📚 Type Safety**: Strict TypeScript with comprehensive type checking and validation
+- **💳 Payment Processing**: Secure Stripe integration for event ticket purchases with checkout sessions
+- **🔐 Authentication & Authorization**: JWT-based auth with Clerk SDK integration and role-based access control
+- **🚀 High Performance**: Dual-layer rate limiting, optimized queries, and connection pooling
+- **🛡️ Enterprise Security**: Zod validation, DOMPurify sanitization, and comprehensive security headers
+- **📊 Monitoring & Health**: Real-time health dashboard, system metrics, and graceful shutdown
+- **🧪 Testing Excellence**: 100% test coverage across unit, integration, and E2E test suites
+- **📚 Type Safety**: Strict TypeScript with Prisma-generated types and runtime validation
 
 ## 🚀 Quick Start
 
@@ -79,6 +88,7 @@ npm run start:debug        # Debug mode with inspector
 npm run test:unit:coverage # Unit tests with coverage
 npm run test:integration:coverage # Integration tests with coverage  
 npm run test:e2e:coverage  # E2E tests with coverage
+npm run test:all          # Run all test suites sequentially
 
 # Quality Assurance
 npx tsc --noEmit          # Type checking
@@ -88,6 +98,13 @@ npm run format            # Code formatting
 # Database
 npx prisma studio         # Database GUI
 npm run seed              # Seed sample data
+npx prisma generate       # Generate Prisma client
+npx prisma db push        # Push schema to database
+
+# Build & Production
+npm run build             # Build for production
+npm run start:prod        # Start production server
+npm run vercel-build      # Vercel deployment build
 ```
 
 ### Project Structure
@@ -95,16 +112,23 @@ npm run seed              # Seed sample data
 portfolio-events-rest-api/
 ├── src/
 │   ├── admin/           # Admin-only operations
-│   ├── auth/            # Authentication module
-│   ├── cities/          # City management
-│   ├── events/          # Event management
-│   ├── guards/          # Auth & authorization
-│   └── schemas/         # Data validation schemas
+│   ├── auth/            # JWT authentication module
+│   ├── cities/          # City management module
+│   ├── database/        # Database service & Prisma
+│   ├── events/          # Event management module
+│   ├── guards/          # Auth & authorization guards
+│   ├── health/          # Health check endpoints
+│   ├── middlewares/     # Custom middleware
+│   ├── payments/        # Stripe payment integration
+│   ├── schemas/         # Zod validation schemas
+│   └── services/        # Shared services (logger, etc.)
 ├── test/
-│   ├── unit/            # Unit tests
-│   ├── integration/     # Integration tests
-│   └── e2e/             # End-to-end tests
-├── .github/workflows/   # GitHub configuration
+│   ├── unit/            # Unit tests (100% coverage)
+│   ├── integration/     # Integration tests (100% coverage)
+│   └── e2e/             # End-to-end tests (100% coverage)
+├── prisma/
+│   └── schema.prisma    # Database schema definition
+├── .github/workflows/   # CI/CD configuration
 └── scripts/             # Build and automation scripts
 ```
 
@@ -149,19 +173,39 @@ portfolio-events-rest-api/
 
 ## 🌐 API Endpoints
 
-### Public Endpoints
-- `GET /` - Welcome message
-- `GET /api/events` - List all events with filtering
-- `GET /api/events/:slug` - Get specific event
-- `GET /api/cities` - List all cities
-- `GET /health` - System health dashboard
+### Public Endpoints (No Authentication)
+```
+GET    /                          - Welcome message
+GET    /api/events                - List all events (with filtering & pagination)
+GET    /api/events/:slug          - Get specific event by slug
+GET    /api/cities                - List all cities (with filtering)
+GET    /health                    - Health dashboard (HTML/JSON)
+GET    /health/json               - Health status (JSON only)
+GET    /ready                     - Readiness check
+GET    /metrics                   - System metrics
+```
 
-### Admin Endpoints (Authentication Required)
-- `POST /api/admin/events` - Create new event
-- `PUT /api/admin/events/:id` - Update event
-- `DELETE /api/admin/events/:id` - Delete event
-- `POST /api/admin/cities` - Create new city
-- `POST /admin/database/reset` - Reset database
+### Payment Endpoints (No Authentication)
+```
+POST   /api/payments/checkout     - Create Stripe checkout session
+GET    /api/payments/verify/:id   - Verify payment session
+```
+
+### Admin Endpoints (JWT + Admin Role Required)
+```
+POST   /api/admin/events          - Create new event
+PUT    /api/admin/events/:id      - Update event (numeric ID)
+DELETE /api/admin/events/:id      - Delete event (numeric ID)
+POST   /api/admin/cities          - Create new city
+PUT    /api/admin/cities/:citySlug - Update city by slug
+POST   /admin/database/reset      - Reset database and seed data
+DELETE /admin/database/truncate   - Truncate all tables
+```
+
+### Interactive Documentation
+```
+GET    /api/docs                  - Swagger UI with full API documentation
+```
 
 ## 🚀 Deployment
 

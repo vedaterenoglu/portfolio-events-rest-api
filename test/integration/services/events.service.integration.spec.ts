@@ -124,6 +124,7 @@ describe('EventsService Integration', () => {
           { name: { contains: 'test', mode: 'insensitive' as const } },
           { description: { contains: 'test', mode: 'insensitive' as const } },
           { city: { contains: 'test', mode: 'insensitive' as const } },
+          { citySlug: { contains: 'test', mode: 'insensitive' as const } },
           { location: { contains: 'test', mode: 'insensitive' as const } },
           { organizerName: { contains: 'test', mode: 'insensitive' as const } },
         ],

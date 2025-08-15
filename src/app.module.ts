@@ -15,6 +15,7 @@ import { HealthModule } from './health/health.module'
 import { OutputSanitizationInterceptor } from './interceptors/output-sanitization.interceptor'
 import { RequestMetricsInterceptor } from './interceptors/request-metrics.interceptor'
 import { RequestTimeoutInterceptor } from './interceptors/request-timeout.interceptor'
+import { PaymentsModule } from './payments/payments.module'
 import { GracefulShutdownService } from './services/graceful-shutdown.service'
 import { HealthMonitoringService } from './services/health-monitoring.service'
 import { LoggerModule } from './services/logger/logger.module'
@@ -24,6 +25,7 @@ import { LoggerModule } from './services/logger/logger.module'
     DatabaseModule,
     CitiesModule,
     EventsModule,
+    PaymentsModule,
     AdminModule,
     AuthModule,
     HealthModule,

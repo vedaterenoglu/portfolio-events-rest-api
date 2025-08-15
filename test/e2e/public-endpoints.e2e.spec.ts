@@ -110,6 +110,18 @@ describe('Public Endpoints (e2e)', () => {
       expect(responseBody.events[0]).toHaveProperty('city', 'Austin')
     })
 
+    it('should support city slug filtering', async () => {
+      const response = await e2eTestHelper
+        .createRequest()
+        .get('/api/events?search=austin')
+        .expect(200)
+
+      const responseBody = response.body as EventsResponse
+      expect(responseBody).toHaveProperty('events')
+      expect(responseBody.events).toHaveLength(1)
+      expect(responseBody.events[0]).toHaveProperty('citySlug', 'austin')
+    })
+
     it('should handle invalid query parameters gracefully', async () => {
       const response = await e2eTestHelper
         .createRequest()

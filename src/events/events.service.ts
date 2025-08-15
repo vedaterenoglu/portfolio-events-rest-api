@@ -37,6 +37,7 @@ export class EventsService {
             { name: { contains: search, mode: 'insensitive' as const } },
             { description: { contains: search, mode: 'insensitive' as const } },
             { city: { contains: search, mode: 'insensitive' as const } },
+            { citySlug: { contains: search, mode: 'insensitive' as const } },
             { location: { contains: search, mode: 'insensitive' as const } },
             {
               organizerName: { contains: search, mode: 'insensitive' as const },
