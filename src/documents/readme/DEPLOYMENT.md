@@ -4,7 +4,7 @@
 - [Pre-Deployment Checklist](#pre-deployment-checklist)
 - [Environment Configuration](#environment-configuration)
 - [Deployment Platforms](#deployment-platforms)
-  - [Vercel](#vercel-deployment)
+  - [DigitalOcean](#digitalocean-deployment)
   - [Docker](#docker-deployment)
   - [AWS EC2](#aws-ec2-deployment)
   - [Heroku](#heroku-deployment)
@@ -76,57 +76,23 @@ NEW_RELIC_LICENSE_KEY=your_license_key
 
 ## 🌐 Deployment Platforms
 
-### Vercel Deployment
+### DigitalOcean Deployment
 
 #### Prerequisites
-- Vercel account
-- Vercel CLI installed: `npm i -g vercel`
+- DigitalOcean account
+- GitHub repository connected
 
-#### Configuration
-Create `vercel.json`:
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "dist/main.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "dist/main.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
-}
-```
+#### App Platform Deployment
+1. Create new app in DigitalOcean App Platform
+2. Connect GitHub repository
+3. Configure build settings:
+   - Build Command: `npm run build`
+   - Run Command: `npm run start:prod`
+4. Set environment variables in App Settings
+5. Deploy
 
-#### Deployment Steps
-```bash
-# Build the project
-npm run vercel-build
-
-# Deploy to Vercel
-vercel --prod
-
-# Set environment variables
-vercel env add DATABASE_URL production
-vercel env add CLERK_SECRET_KEY production
-vercel env add STRIPE_SECRET_KEY production
-```
-
-#### Post-Deployment
-```bash
-# View logs
-vercel logs
-
-# Manage domains
-vercel domains add your-domain.com
-```
+#### Droplet Deployment
+See VPS deployment section for manual setup on DigitalOcean Droplets.
 
 ---
 

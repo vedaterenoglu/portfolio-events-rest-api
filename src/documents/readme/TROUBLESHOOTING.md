@@ -352,9 +352,6 @@ Error: Missing required environment variable
 printenv | grep CLERK
 printenv | grep STRIPE
 
-# For Vercel
-vercel env pull
-
 # For Heroku
 heroku config
 

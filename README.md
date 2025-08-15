@@ -107,7 +107,6 @@ npx prisma db push        # Push schema to database
 # Build & Production
 npm run build             # Build for production
 npm run start:prod        # Start production server
-npm run vercel-build      # Vercel deployment build
 ```
 
 ### Project Structure
@@ -216,7 +215,7 @@ GET    /api/docs                  - Swagger UI with full API documentation
 - **Docker**: Complete containerization support
 - **AWS EC2**: Production deployment guide
 - **Heroku**: One-click deployment
-- **Vercel**: Serverless deployment
+- **DigitalOcean**: App Platform and Droplets
 - **VPS**: Traditional server deployment
 
 ### Production Features

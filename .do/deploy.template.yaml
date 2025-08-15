@@ -1,0 +1,127 @@
+# DigitalOcean App Platform - One-Click Deploy Template
+# This template enables "Deploy to DigitalOcean" button functionality
+# Users can deploy this app with a single click from GitHub
+
+spec:
+  name: portfolio-events-api
+  region: fra  # Frankfurt - closest to Neon DB in EU-Central-1
+  
+  services:
+    - name: portfolio-events-api
+      environment_slug: node-js
+      
+      # GitHub repository source
+      git:
+        repo_clone_url: https://github.com/vedaterenoglu/portfolio-events-rest-api.git
+        branch: main
+      
+      # Build configuration
+      build_command: npm run build
+      run_command: npm run start:prod
+      
+      # Instance configuration
+      instance_size_slug: basic-xxs  # $5/month - suitable for portfolio demo
+      instance_count: 1
+      
+      # HTTP configuration
+      http_port: 8080
+      routes:
+        - path: /
+      
+      # Health check configuration
+      health_check:
+        http_path: /health
+        initial_delay_seconds: 10
+        period_seconds: 10
+        timeout_seconds: 3
+        success_threshold: 1
+        failure_threshold: 3
+      
+      # Environment variables with prompts for user input
+      envs:
+        # Application settings
+        - key: NODE_ENV
+          value: "production"
+          scope: RUN_TIME
+          type: GENERAL
+        
+        - key: PORT
+          value: "8080"
+          scope: RUN_TIME
+          type: GENERAL
+        
+        # Database configuration (user must provide)
+        - key: DATABASE_URL
+          value: ""
+          scope: RUN_TIME
+          type: SECRET
+          description: "PostgreSQL connection string (e.g., from Neon, Supabase, or DigitalOcean)"
+        
+        # Clerk Authentication (user must provide)
+        - key: CLERK_PUBLISHABLE_KEY
+          value: ""
+          scope: RUN_TIME
+          type: GENERAL
+          description: "Clerk publishable key (starts with pk_test_ or pk_live_)"
+        
+        - key: CLERK_SECRET_KEY
+          value: ""
+          scope: RUN_TIME
+          type: SECRET
+          description: "Clerk secret key (starts with sk_test_ or sk_live_)"
+        
+        # Stripe Payment Processing (user must provide)
+        - key: STRIPE_SECRET_KEY
+          value: ""
+          scope: RUN_TIME
+          type: SECRET
+          description: "Stripe secret key (starts with sk_test_ or sk_live_)"
+        
+        # CORS Configuration
+        - key: CORS_ORIGIN
+          value: "https://your-frontend-domain.com"
+          scope: RUN_TIME
+          type: GENERAL
+          description: "Comma-separated list of allowed origins for CORS"
+        
+        - key: CORS_CREDENTIALS
+          value: "true"
+          scope: RUN_TIME
+          type: GENERAL
+
+# Alerts configuration
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+  - rule: DEPLOYMENT_LIVE
+
+# Deploy button metadata
+info:
+  description: |
+    # Portfolio Events REST API
+    
+    A production-ready NestJS REST API demonstrating enterprise-grade development with:
+    - 🔐 JWT Authentication with Clerk
+    - 💳 Stripe Payment Integration
+    - 🗄️ PostgreSQL with Prisma ORM
+    - 📊 100% Test Coverage
+    - 🚀 Production-Ready Architecture
+    
+    ## Pre-Deployment Requirements
+    
+    Before deploying, you'll need:
+    1. **Database URL** - PostgreSQL connection string (Neon, Supabase, or DigitalOcean)
+    2. **Clerk Keys** - Get from https://dashboard.clerk.com
+    3. **Stripe Key** - Get from https://dashboard.stripe.com
+    
+    ## Post-Deployment Steps
+    
+    After deployment:
+    1. Update CORS_ORIGIN with your frontend URL
+    2. Test the health endpoint: `https://your-app.ondigitalocean.app/health`
+    3. Access API documentation: `https://your-app.ondigitalocean.app/api/docs`
+    
+    ## Resources
+    - [GitHub Repository](https://github.com/vedaterenoglu/portfolio-events-rest-api)
+    - [API Documentation](https://portfolio-events-rest-api.demo.vedaterenoglu.com/api/docs)
+    - [Author Website](https://vedaterenoglu.com)
