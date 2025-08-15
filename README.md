@@ -66,10 +66,13 @@ npm run start:dev
 
 ### 📚 Comprehensive Guides
 
-- **[🔧 Installation & Setup](src/documents/readme/installation-setup.md)** - Complete setup guide with prerequisites, database configuration, and troubleshooting
-- **[🌐 API Documentation](src/documents/readme/api-documentation.md)** - Detailed API endpoints, authentication, and usage examples
-- **[🧪 Testing Guide](src/documents/readme/testing-guide.md)** - Testing strategies, coverage requirements, and best practices
-- **[📦 Deployment Guide](src/documents/readme/deployment-guide.md)** - Production deployment strategies for various platforms
+- **[🔧 Installation & Setup](src/documents/readme/SETUP.md)** - Complete setup guide with prerequisites, database configuration, and troubleshooting
+- **[🌐 API Documentation](src/documents/readme/API.md)** - Detailed API endpoints, authentication, and usage examples
+- **[📖 Usage Guide](src/documents/readme/USAGE.md)** - How to use the API, authentication, and integration examples
+- **[🏗️ Architecture](src/documents/readme/ARCHITECTURE.md)** - System design, patterns, and technical architecture
+- **[📦 Deployment Guide](src/documents/readme/DEPLOYMENT.md)** - Production deployment strategies for various platforms
+- **[🤝 Contributing](src/documents/readme/CONTRIBUTING.md)** - Development workflow, code standards, and contribution guidelines
+- **[🔧 Troubleshooting](src/documents/readme/TROUBLESHOOTING.md)** - Common issues and solutions
 
 ### 🔍 Interactive Documentation
 
