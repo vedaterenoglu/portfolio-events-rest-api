@@ -105,7 +105,9 @@ export class PaymentsService {
           },
         ],
         mode: 'payment',
-        success_url: `${dto.successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${dto.successUrl}${
+          dto.successUrl.includes('?') ? '&' : '?'
+        }session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: dto.cancelUrl,
         metadata: {
           eventSlug: dto.eventSlug,
