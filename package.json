@@ -1,6 +1,6 @@
 {
   "name": "portfolio-events-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nest.js template with Clerk, Prisma, and TypeScript.",
   "private": true,
   "repository": {
